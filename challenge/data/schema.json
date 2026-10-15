@@ -1,0 +1,124 @@
+{
+  "seed": 42,
+  "tables": {
+    "service_reps": {
+      "rows": 8,
+      "fields": {
+        "rep_id": {"type": "id", "prefix": "REP-", "width": 3},
+        "name": {"type": "person"},
+        "department": {"type": "choice", "values": ["Billing", "Technical", "Onboarding", "Retention"], "weights": [3, 3, 2, 2]},
+        "tenure_months": {"type": "int", "min": 2, "max": 60}
+      }
+    },
+    "complaints": {
+      "rows": 40,
+      "fields": {
+        "complaint_id": {"type": "id", "prefix": "CMP-", "width": 4},
+        "rep_id": {"type": "ref", "table": "service_reps", "field": "rep_id"},
+        "received_date": {"type": "date", "from": "2025-01-01", "to": "2025-06-30"},
+        "channel": {"type": "choice", "values": ["email", "chat", "phone"], "weights": [4, 3, 3]},
+        "severity": {"type": "choice", "values": ["low", "medium", "high"], "weights": [3, 4, 3]},
+        "complaint_text": {"type": "text", "values": [
+          "The representative was unhelpful and dismissive during our call.",
+          "I waited 40 minutes and the issue was never resolved.",
+          "The agent gave me incorrect information about my billing.",
+          "Very rude tone throughout the conversation.",
+          "Problem was escalated twice and still unresolved after a week.",
+          "The representative promised a callback that never happened.",
+          "I was disconnected three times during the same call.",
+          "The agent did not listen and kept repeating the same script."
+        ]},
+        "status": {"type": "choice", "values": ["open", "resolved", "escalated"], "weights": [4, 4, 2]}
+      },
+      "cases": [
+        {
+          "label": "demo_main — rude tone, medium severity, open",
+          "count": 1,
+          "set": {
+            "complaint_id": "CMP-0001",
+            "severity": "medium",
+            "channel": "email",
+            "complaint_text": "The representative was extremely rude and dismissive. I asked a simple billing question and was told to 'figure it out myself'. This is unacceptable.",
+            "status": "open"
+          }
+        },
+        {
+          "label": "demo_followup — same rep, high severity, escalated",
+          "count": 1,
+          "set": {
+            "complaint_id": "CMP-0002",
+            "severity": "high",
+            "channel": "chat",
+            "complaint_text": "This is the third time I contact support about the same unresolved issue. Each time a different agent gives me contradictory information.",
+            "status": "escalated"
+          }
+        },
+        {
+          "label": "improvement_test — after feedback accepted",
+          "count": 1,
+          "set": {
+            "complaint_id": "CMP-0003",
+            "severity": "medium",
+            "channel": "email",
+            "complaint_text": "The representative interrupted me repeatedly and did not let me explain the problem. The tone was condescending.",
+            "status": "open"
+          }
+        },
+        {
+          "label": "standard rude tone",
+          "count": 7,
+          "set": {"severity": "medium", "status": "open"}
+        },
+        {
+          "label": "standard unresolved issue",
+          "count": 10,
+          "set": {"severity": "high", "status": "escalated"}
+        },
+        {
+          "label": "standard resolved",
+          "count": 20,
+          "set": {"status": "resolved"}
+        }
+      ]
+    },
+    "agent_runs": {
+      "rows": 20,
+      "fields": {
+        "run_id": {"type": "id", "prefix": "RUN-", "width": 4},
+        "complaint_id": {"type": "ref", "table": "complaints", "field": "complaint_id"},
+        "agent_version": {"type": "int", "min": 1, "max": 1},
+        "output_email_draft": {"type": "text", "values": ["(generated at runtime)"]},
+        "output_action_note": {"type": "text", "values": ["(generated at runtime)"]},
+        "rating_stars": {"type": "int", "min": 1, "max": 5},
+        "rating_comment": {"type": "text", "values": [""]},
+        "improvement_accepted": {"type": "bool"}
+      },
+      "cases": [
+        {
+          "label": "demo_run_1 — before improvement",
+          "count": 1,
+          "set": {
+            "run_id": "RUN-0001",
+            "complaint_id": "CMP-0001",
+            "agent_version": 1,
+            "rating_stars": 3,
+            "rating_comment": "Too formal and generic. Needs to feel more human.",
+            "improvement_accepted": false
+          }
+        },
+        {
+          "label": "demo_run_2 — after improvement accepted",
+          "count": 1,
+          "set": {
+            "run_id": "RUN-0002",
+            "complaint_id": "CMP-0001",
+            "agent_version": 2,
+            "rating_stars": 5,
+            "rating_comment": "",
+            "improvement_accepted": true
+          }
+        }
+      ]
+    }
+  }
+}

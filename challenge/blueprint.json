@@ -1,0 +1,219 @@
+{
+  "meta": {
+    "title": "Self-Improving Agent Studio",
+    "tagline": "Any employee builds a personal AI agent in five minutes. Every run makes it better.",
+    "team": "Team Agent Builder",
+    "challenge": "From Bob to Business Impact",
+    "date": "2025-07-10",
+    "status": "plan",
+    "language": "en",
+    "direction": "ltr"
+  },
+  "hero": {
+    "value": "Prompt tweaking → one click",
+    "label": "from iterating a prompt by hand to an agent that improves itself from your feedback",
+    "basis": "assumption",
+    "source": "Based on observed behaviour of knowledge workers who repeatedly copy-paste and adjust prompts in generative AI tools. Measurable in the pilot: compare time-to-acceptable-output before and after.",
+    "note": "The improvement loop is the claim. The pilot will measure it."
+  },
+  "problem": {
+    "headline": "Every knowledge worker has a repeating task. Nobody has an agent that gets better at it.",
+    "lead": "Generative AI tools are available in most organisations. Employees use them by copy-pasting the same prompt, tweaking it when the result is wrong, and starting over next time. Nothing is saved. Nothing improves.",
+    "who": "Knowledge workers in HR, legal, finance, operations and customer service who produce the same type of structured output — reports, response emails, briefings, summaries — repeatedly, from company documents and internal data.",
+    "today": "The employee opens a chat interface, pastes their prompt, reads the result, edits the prompt, pastes it again. When the result is finally good, the improved prompt is forgotten. The cycle repeats next time.",
+    "cost": "Time lost to prompt iteration on every run, accumulated across every knowledge worker who does this daily. The agent that already knows what 'good' looks like for this person and this task does not exist yet.",
+    "why_now": "LLMs are good enough to generate and accept prompt improvements from plain-language feedback. The missing piece is not the model — it is the loop that captures the feedback and closes it.",
+    "facts": [
+      {"value": "~45 min", "label": "estimated time per week per worker lost to prompt iteration", "basis": "assumption", "source": "Pilot measurement planned: time-log two workers for one week before and after. Assumption: 3 runs per day, 5 min iteration each."},
+      {"value": "0%", "label": "of prompt improvements are retained across sessions in current tools", "basis": "estimate", "source": "ChatGPT, Copilot and similar tools do not persist per-task prompt tuning between sessions by default."},
+      {"value": "10–30%", "label": "of a white-collar workforce does recurring structured output work", "basis": "assumption", "source": "Internal survey in the pilot organisation; or HR headcount data by role."}
+    ],
+    "quote": "Every week I write the same kind of email. Every week I have to tell the AI what tone to use. Why doesn't it remember?",
+    "quote_by": "Customer service manager (representative quote)"
+  },
+  "process": {
+    "headline": "Six manual steps and no memory become **three steps and an agent that learns**",
+    "lead": "The change is not speed. It is retention: the agent accumulates the user's taste and applies it without being asked.",
+    "basis": "assumption",
+    "source": "Before: observed in customer service teams; after: the target the PoC is built to meet. Pilot will measure both.",
+    "before": {
+      "title": "Today — manual prompt iteration",
+      "steps": [
+        {"actor": "Employee", "title": "Opens AI chat tool", "minutes": 2, "kind": "manual"},
+        {"actor": "Employee", "title": "Pastes or rewrites prompt from memory", "minutes": 8, "kind": "manual"},
+        {"actor": "Employee", "title": "Reads the result", "minutes": 5, "kind": "manual"},
+        {"actor": "Employee", "title": "Judges quality, edits prompt", "minutes": 10, "kind": "decision"},
+        {"actor": "Employee", "title": "Runs again until acceptable", "minutes": 10, "kind": "manual"},
+        {"actor": "Employee", "title": "Copies result to destination manually", "minutes": 5, "kind": "manual"}
+      ]
+    },
+    "after": {
+      "title": "With the Agent Studio",
+      "steps": [
+        {"actor": "Employee", "title": "Opens agent, pastes input", "minutes": 2, "kind": "manual"},
+        {"actor": "Agent", "title": "Runs with grounded instructions, delivers output", "minutes": 1, "kind": "ai"},
+        {"actor": "Employee", "title": "Rates result, accepts suggested improvement", "minutes": 3, "kind": "decision"}
+      ]
+    }
+  },
+  "architecture": {
+    "headline": "watsonx.ai is the engine and the coach — Bob is where it is built",
+    "lead": "The studio is three screens over a single agent loop. watsonx.ai runs the agent and generates the improvement suggestion. Company knowledge is a grounding context, not a fine-tuned model.",
+    "caption": "Dashed nodes are mocked in the proof of concept with synthetic data and invented policy docs. Interfaces are the real ones — the mock is swapped for the live system in the pilot.",
+    "layers": [
+      {"id": "people", "title": "People", "nodes": [
+        {"id": "employee", "title": "Knowledge worker", "tech": "Defines, runs, rates", "kind": "user"},
+        {"id": "manager", "title": "Team manager", "tech": "Reviews agent quality", "kind": "user"}
+      ]},
+      {"id": "experience", "title": "Experience", "nodes": [
+        {"id": "studio_ui", "title": "Agent Studio", "tech": "3-step wizard: Define → Test → Improve", "kind": "ui"},
+        {"id": "output_view", "title": "Output viewer", "tech": "Email draft + action note renderer", "kind": "ui"}
+      ]},
+      {"id": "agents", "title": "Agents & Models", "nodes": [
+        {"id": "runner", "title": "Agent runner", "tech": "watsonx.ai prompt chain", "kind": "agent", "ibm": true, "role": "Executes the agent with grounded instructions on each run"},
+        {"id": "improver", "title": "Improvement engine", "tech": "watsonx.ai Granite", "kind": "model", "ibm": true, "role": "Turns a rating + comment into a concrete, actionable prompt edit suggestion"},
+        {"id": "bob_build", "title": "Bob IDE", "tech": "IBM Bob", "kind": "tool", "ibm": true, "role": "Build environment: agent definitions, tools, tests and the task session report for judges"}
+      ]},
+      {"id": "tools", "title": "Tools & Connectors", "nodes": [
+        {"id": "policy_store", "title": "Policy store", "tech": "Mock: local .txt files", "kind": "tool", "status": "mock"},
+        {"id": "email_conn", "title": "Email connector", "tech": "Mock: logs draft, no send", "kind": "tool", "status": "mock"},
+        {"id": "crm_conn", "title": "CRM connector", "tech": "Mock: records action note", "kind": "tool", "status": "mock"}
+      ]},
+      {"id": "data", "title": "Data", "nodes": [
+        {"id": "agent_store", "title": "Agent store", "tech": "Agent definitions + version history", "kind": "data"},
+        {"id": "run_log", "title": "Run log", "tech": "Inputs, outputs, ratings, accepted improvements", "kind": "data"},
+        {"id": "company_kb", "title": "Company knowledge base", "tech": "SharePoint / intranet (mocked)", "kind": "external", "status": "mock"}
+      ]}
+    ],
+    "edges": [
+      {"from": "employee", "to": "studio_ui", "label": "defines agent"},
+      {"from": "employee", "to": "output_view", "label": "rates result"},
+      {"from": "manager", "to": "studio_ui", "label": "reviews"},
+      {"from": "studio_ui", "to": "runner", "label": "run"},
+      {"from": "studio_ui", "to": "improver", "label": "rating + comment"},
+      {"from": "output_view", "to": "studio_ui", "label": "feedback", "style": "dashed"},
+      {"from": "runner", "to": "improver", "label": "suggests edit"},
+      {"from": "runner", "to": "policy_store", "label": "grounds on"},
+      {"from": "runner", "to": "email_conn", "label": "drafts"},
+      {"from": "runner", "to": "crm_conn", "label": "logs"},
+      {"from": "runner", "to": "agent_store", "label": "reads def"},
+      {"from": "improver", "to": "agent_store", "label": "writes new ver"},
+      {"from": "runner", "to": "run_log"},
+      {"from": "bob_build", "to": "runner", "label": "deploys", "style": "dashed"},
+      {"from": "policy_store", "to": "company_kb", "style": "dashed"},
+      {"from": "email_conn", "to": "run_log", "style": "dashed"},
+      {"from": "crm_conn", "to": "run_log", "style": "dashed"}
+    ],
+    "decisions": [
+      {"title": "Grounding, not fine-tuning", "why": "Company knowledge is passed as context on each run. No model is fine-tuned, so the PoC runs without data export approval and the knowledge stays current without retraining."},
+      {"title": "Improvement is a suggestion, not an automatic rewrite", "why": "The agent never updates its own instructions without the user's explicit acceptance. This keeps a person in the loop and avoids drift."},
+      {"title": "Mocks behind real interfaces", "why": "The PoC runs on synthetic data. The policy store, email connector and CRM expose the same API the real systems would, so the mock is replaced by an adapter in the pilot without changing the agent."},
+      {"title": "Built entirely in Bob", "why": "The task session report in Bob IDE is part of the submission. Building outside Bob loses that evidence for the judges."}
+    ]
+  },
+  "impact": {
+    "headline": "Each run takes **minutes instead of half an hour**. The agent remembers what good looks like.",
+    "lead": "The primary metric is time-to-acceptable-output per recurring task. The secondary metric is rating trajectory: do accepted improvements lead to higher ratings on the next run?",
+    "metrics": [
+      {"label": "Time to acceptable output", "before": 40, "after": 6, "unit": "min per run", "better": "lower", "basis": "assumption", "source": "Before: estimated from 3 runs × 5 min iteration + 25 min total. After: target for the PoC. Pilot will measure."},
+      {"label": "Prompt setup time at session start", "before": 8, "after": 1, "unit": "min", "better": "lower", "basis": "assumption", "source": "Before: employee rewrites prompt from memory. After: agent retains instructions between sessions."},
+      {"label": "Agent rating after 5 runs", "before": 2, "after": 4, "unit": "out of 5", "better": "higher", "basis": "assumption", "source": "Target: accepted improvements measurably raise the average rating over 5 runs. Pilot will measure."},
+      {"label": "Runs before first acceptable output", "before": 3, "after": 1, "unit": "runs", "better": "lower", "basis": "assumption", "source": "Pilot measurement: compare with and without improvement loop active."}
+    ],
+    "waterfall": {
+      "title": "Indicative yearly value per 100 knowledge workers",
+      "unit": "thousand USD per year",
+      "total_label": "Net value, year one",
+      "items": [
+        {"label": "Time returned (prompt iteration)", "value": 90, "basis": "assumption", "source": "45 min/week × 100 workers × 48 weeks × $40/hr loaded"},
+        {"label": "Time returned (session setup)", "value": 26, "basis": "assumption", "source": "7 min/day × 100 workers × 240 days × $40/hr loaded"},
+        {"label": "Error reduction (wrong output forwarded)", "value": 20, "basis": "assumption", "source": "Estimated 2 rework events/worker/month at 30 min each; halved with rated outputs"},
+        {"label": "Platform and model run cost", "value": -18, "basis": "estimate", "source": "watsonx.ai API usage at 100 workers × 5 runs/day × avg 2k tokens"}
+      ]
+    },
+    "scale": [
+      "The same platform handles any recurring structured-output task: legal clause drafting, HR onboarding emails, finance commentary, ops incident reports.",
+      "An organisation of 1 000 knowledge workers scales the value waterfall by 10× with no change to the architecture.",
+      "A connector catalog (calendar, CRM, Drive, Slack) turns the output step from text to direct action — each connector is a configuration change, not a code change."
+    ]
+  },
+  "alternatives": {
+    "headline": "Every tool lets you prompt. None of them **remembers what you meant by good**.",
+    "criteria": ["Learns from feedback", "Grounds on company docs", "No-code for employees", "Works in minutes", "IBM technology"],
+    "options": [
+      {"name": "Do nothing", "note": "employees keep iterating manually", "status_quo": true, "values": ["no", "no", "yes", "yes", "no"]},
+      {"name": "ChatGPT / Copilot", "note": "general-purpose AI chat", "values": ["no", "partial", "yes", "yes", "no"]},
+      {"name": "watsonx Orchestrate", "note": "IBM's no-code agent platform", "values": ["no", "yes", "yes", "yes", "yes"]},
+      {"name": "Custom agent framework", "note": "developer-built, LangChain etc.", "values": ["partial", "yes", "no", "no", "partial"]},
+      {"name": "Self-Improving Agent Studio", "ours": true, "values": ["yes", "yes", "yes", "yes", "yes"]}
+    ],
+    "difference": "Every alternative on the list produces an output. Only this solution closes the loop: when the output is wrong, the agent proposes a change to its own instructions, the user accepts or edits it, and the next run starts better. That loop — feedback to suggestion to acceptance to improved run — is absent from every listed alternative and from most commercial agent builders."
+  },
+  "demo": {
+    "headline": "Four minutes, one complaint, the loop closes on screen",
+    "lead": "One customer service manager. One complaint. The audience watches the agent get better in real time.",
+    "items": [
+      {"title": "Build the agent in 90 seconds", "detail": "Manager fills three fields: input (complaint text), output (response email + internal action note), context (service policy doc). Clicks Save.", "time": "0:00–1:30"},
+      {"title": "First run — acceptable but generic", "detail": "Complaint CMP-0001 is pasted. The agent returns a polished but overly formal email draft. The audience recognises the problem.", "time": "1:30–2:10"},
+      {"title": "Rate and comment", "detail": "Manager clicks 3 stars, types 'Too formal — more human, use their name'. Clicks Suggest improvement.", "time": "2:10–2:30"},
+      {"title": "The suggestion appears", "detail": "The studio shows: 'Add instruction: address the customer by name; open with empathy before policy.' Manager clicks Accept.", "time": "2:30–3:00"},
+      {"title": "Second run — visibly better", "detail": "Same complaint, new run. The draft opens with the customer's name and a human acknowledgement. Rating jumps to 5 stars without prompting.", "time": "3:00–3:45"},
+      {"title": "The loop is the product", "detail": "The agent definition now carries the accepted improvement. Every future run starts from this better baseline. The improvement is shown in the run log.", "time": "3:45–4:00"}
+    ],
+    "facts": [
+      {"value": "4 min", "label": "total demo runtime", "basis": "estimate", "source": "Scripted and timed with the invented data."},
+      {"value": "0", "label": "slides — the demo is the product", "basis": "estimate", "source": "The 3-step UI is self-explanatory."}
+    ]
+  },
+  "adoption": {
+    "headline": "A knowledge worker is productive in the **first five minutes**",
+    "lead": "No IT request. No training course. The agent builder is three fields and a Run button. The first useful output arrives before the employee finishes reading the instructions.",
+    "items": [
+      {"title": "Open the studio", "detail": "Link in the company intranet or a pinned message in the team channel. No install, no new login."},
+      {"title": "Describe your task in plain language", "detail": "Three fields: what you will give it, what you want back, which company doc it should follow. Each field has a placeholder example."},
+      {"title": "Run it once", "detail": "Paste your real input — a complaint, a note, a request — and click Run. The first output arrives in seconds."},
+      {"title": "Rate and let it improve", "detail": "If the result is not quite right, give it stars and a comment. Accept the suggestion. Run again. Three iterations are typical before the agent matches your standard."},
+      {"title": "Reuse tomorrow", "detail": "The agent is saved with your name. Tomorrow it starts from where you left it — the improvements are already in."}
+    ],
+    "facts": [
+      {"value": "5 min", "label": "to first useful output", "basis": "assumption", "source": "Target for the PoC. To be timed with two real users in the pilot."},
+      {"value": "3 runs", "label": "typical improvement cycles before the agent matches user standard", "basis": "assumption", "source": "To be measured in the pilot from the run log."}
+    ]
+  },
+  "roadmap": {
+    "headline": "A working loop in three weeks. A real organisation in ten.",
+    "items": [
+      {"phase": "Proof of concept", "duration": "Weeks 1–3", "items": ["One agent type: customer complaint handler", "Synthetic complaints, mocked policy store and CRM", "watsonx.ai inference + improvement suggestion", "3-step UI: Define → Test → Improve"], "gate": "Improvement loop closes end-to-end: a rating + comment produces a visible improvement on the next run for at least 8 of 10 planted test cases."},
+      {"phase": "Pilot", "duration": "Weeks 4–10", "items": ["Two real knowledge workers, one department", "Live policy docs from SharePoint", "Email connector wired (draft only, no auto-send)", "Rating trajectory measured over 20 runs per user"], "gate": "Average rating after 5 improvement cycles is at least 1 star higher than the first run, measured on real tasks."},
+      {"phase": "Production", "duration": "Quarter 2", "items": ["Self-service onboarding for all departments", "Connector catalog (calendar, CRM, Drive)", "Manager review dashboard", "Agent sharing between team members"], "gate": "100 active agents across 3 departments; median time-to-acceptable-output under 5 minutes."}
+    ]
+  },
+  "criteria": {
+    "headline": "How this entry answers the four judging criteria",
+    "items": [
+      {"name": "Completeness and feasibility", "evidence": ["One agent type works end-to-end in the PoC on synthetic data", "Architecture names every IBM component, every mock, and every out-of-scope item", "Three-phase roadmap with a measurable gate after each phase", "Week-1 gate is specific: improvement loop closes on 8 of 10 test cases"], "gap": "The live policy store connector and the email send connector are designed but not built. The pilot gate is a target, not a measurement."},
+      {"name": "Creativity and innovation", "evidence": ["The feedback-to-improvement loop closes without human prompt engineering — the agent proposes its own edit", "No commercial agent builder on the market offers a persistent, user-driven improvement loop on the agent's own instructions", "The improvement is a suggestion the user accepts, keeping a person in the loop — not an automatic rewrite"], "gap": "No formal market search was done. The 'no product does this' claim is based on the team's knowledge of available tools."},
+      {"name": "Design and usability", "evidence": ["Three fields to define an agent — no configuration beyond plain language", "The demo takes four minutes with no narration of the UI — it is self-explanatory", "An employee is productive before the first training session ends"], "gap": "Usability tested only by the team so far. A usability pass with one real user is planned before submission."},
+      {"name": "Effectiveness and efficiency", "evidence": ["The problem is frequent (daily, for a large share of knowledge workers)", "The improvement loop creates a measurable baseline: rating trajectory over runs", "The same architecture scales to any recurring structured-output task in any department"], "gap": "All impact numbers are assumptions. The pilot will replace them with measurements."}
+    ]
+  },
+  "risks": {
+    "items": [
+      {"risk": "Improvement suggestions are generic and do not reflect the user's actual intent", "level": "high", "mitigation": "Week-1 gate: generate one demonstrably useful suggestion from a thumbs-down + one comment. If the quality is poor, narrow the suggestion to a set of pre-defined improvement patterns before the demo."},
+      {"risk": "The agent improvement loop causes drift — accepted improvements degrade quality after several cycles", "level": "medium", "mitigation": "Every accepted improvement is versioned. The user can revert to any previous version. The run log shows the rating trajectory so drift is visible."},
+      {"risk": "Company knowledge base is too unstructured to use as grounding context", "level": "medium", "mitigation": "The PoC uses two hand-written invented policy docs. The pilot starts with a curated set of 5–10 real documents, not the whole intranet."},
+      {"risk": "The demo depends on watsonx.ai API availability during the presentation", "level": "low", "mitigation": "Pre-record the two key runs (first output and improved output) as a fallback video. The live demo runs first; the video is only used if the API is unavailable."}
+    ]
+  },
+  "assumptions": [
+    {"text": "A knowledge worker spends ~45 minutes per week iterating prompts by hand across all recurring tasks", "check": "Ask two workers to time-log their AI tool use for one week before the pilot starts. Count iterations per task type."},
+    {"text": "3 improvement cycles bring an agent from a first run to a user's accepted standard", "check": "Measure from the run log in the pilot: count accepted improvements before the user stops rating below 4 stars."},
+    {"text": "10–30% of a white-collar workforce does recurring structured-output work", "check": "Pull role-level headcount from HR; count roles whose primary output is a recurring document type."},
+    {"text": "The indicative value waterfall of $118k/year for 100 workers is order-of-magnitude correct", "check": "Replace the $40/hr loaded rate with the organisation's actual figure; replace the 45 min/week estimate with the time-log measurement."}
+  ],
+  "sources": [
+    {"label": "Invented demo data", "detail": "challenge/data/ — synthetic complaints, service reps and agent runs generated by synth.py with seed 42. Manifest at challenge/data/manifest.json."},
+    {"label": "Invented policy docs", "detail": "challenge/data/policies/ — service_policy.txt and escalation_guide.txt. Plainly synthetic; no real company procedures."},
+    {"label": "Judging criteria", "detail": "IBM Bob Challenge judging rubric as documented in the challenge-kit pack."}
+  ]
+}

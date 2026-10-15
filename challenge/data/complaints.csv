@@ -1,0 +1,41 @@
+complaint_id,rep_id,received_date,channel,severity,complaint_text,status
+CMP-0001,REP-005,2025-01-21,phone,high,Very rude tone throughout the conversation.,resolved
+CMP-0002,REP-006,2025-02-11,email,high,The agent gave me incorrect information about my billing.,escalated
+CMP-0003,REP-002,2025-06-05,chat,high,I waited 40 minutes and the issue was never resolved.,escalated
+CMP-0004,REP-005,2025-06-13,chat,low,The agent gave me incorrect information about my billing.,resolved
+CMP-0005,REP-001,2025-02-28,phone,high,Very rude tone throughout the conversation.,resolved
+CMP-0006,REP-006,2025-02-24,chat,medium,The agent did not listen and kept repeating the same script.,resolved
+CMP-0007,REP-005,2025-02-05,email,medium,The agent gave me incorrect information about my billing.,open
+CMP-0003,REP-007,2025-04-03,email,medium,The representative interrupted me repeatedly and did not let me explain the problem. The tone was condescending.,open
+CMP-0001,REP-001,2025-01-29,email,medium,The representative was extremely rude and dismissive. I asked a simple billing question and was told to 'figure it out myself'. This is unacceptable.,open
+CMP-0010,REP-007,2025-04-08,chat,medium,The agent gave me incorrect information about my billing.,open
+CMP-0011,REP-001,2025-06-24,phone,high,Problem was escalated twice and still unresolved after a week.,escalated
+CMP-0012,REP-006,2025-01-29,email,low,The representative was unhelpful and dismissive during our call.,resolved
+CMP-0013,REP-005,2025-05-09,phone,medium,The representative was unhelpful and dismissive during our call.,resolved
+CMP-0014,REP-004,2025-02-09,email,medium,The agent did not listen and kept repeating the same script.,open
+CMP-0015,REP-001,2025-06-03,email,low,The agent did not listen and kept repeating the same script.,resolved
+CMP-0016,REP-005,2025-03-03,email,high,The agent did not listen and kept repeating the same script.,escalated
+CMP-0002,REP-008,2025-01-18,chat,high,This is the third time I contact support about the same unresolved issue. Each time a different agent gives me contradictory information.,escalated
+CMP-0018,REP-003,2025-03-09,chat,medium,The agent did not listen and kept repeating the same script.,open
+CMP-0019,REP-004,2025-03-21,email,medium,The agent gave me incorrect information about my billing.,open
+CMP-0020,REP-008,2025-01-31,email,low,The representative was unhelpful and dismissive during our call.,resolved
+CMP-0021,REP-004,2025-01-02,email,high,I waited 40 minutes and the issue was never resolved.,escalated
+CMP-0022,REP-006,2025-01-19,chat,high,Very rude tone throughout the conversation.,escalated
+CMP-0023,REP-008,2025-03-04,phone,medium,I waited 40 minutes and the issue was never resolved.,open
+CMP-0024,REP-007,2025-04-01,chat,medium,The representative promised a callback that never happened.,resolved
+CMP-0025,REP-002,2025-01-16,chat,medium,I was disconnected three times during the same call.,resolved
+CMP-0026,REP-004,2025-05-18,chat,high,The agent gave me incorrect information about my billing.,escalated
+CMP-0027,REP-002,2025-04-24,phone,high,The representative was unhelpful and dismissive during our call.,resolved
+CMP-0028,REP-001,2025-01-24,phone,high,I waited 40 minutes and the issue was never resolved.,resolved
+CMP-0029,REP-004,2025-04-13,phone,low,The representative was unhelpful and dismissive during our call.,resolved
+CMP-0030,REP-008,2025-03-15,chat,high,The agent did not listen and kept repeating the same script.,resolved
+CMP-0031,REP-008,2025-02-09,email,low,The representative was unhelpful and dismissive during our call.,resolved
+CMP-0032,REP-001,2025-03-22,email,medium,Problem was escalated twice and still unresolved after a week.,resolved
+CMP-0033,REP-003,2025-01-15,phone,low,I waited 40 minutes and the issue was never resolved.,resolved
+CMP-0034,REP-004,2025-04-14,email,high,I waited 40 minutes and the issue was never resolved.,resolved
+CMP-0035,REP-002,2025-04-18,chat,medium,The agent gave me incorrect information about my billing.,resolved
+CMP-0036,REP-006,2025-03-03,email,medium,The representative promised a callback that never happened.,open
+CMP-0037,REP-002,2025-01-03,chat,high,The agent did not listen and kept repeating the same script.,escalated
+CMP-0038,REP-004,2025-05-10,email,high,The agent did not listen and kept repeating the same script.,resolved
+CMP-0039,REP-006,2025-03-14,email,high,The representative promised a callback that never happened.,escalated
+CMP-0040,REP-001,2025-06-20,phone,high,The representative promised a callback that never happened.,escalated

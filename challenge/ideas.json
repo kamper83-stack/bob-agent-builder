@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "status": "ideas",
+    "title": "Agent Builder — Idea Cards",
+    "team": "2 people, 20 h/week each",
+    "language": "en",
+    "direction": "ltr"
+  },
+  "ideas": [
+    {
+      "id": "a",
+      "title": "Agent Builder Lite",
+      "direction": "new-app",
+      "pitch": "A guided wizard inside the company intranet where a non-technical employee fills in three fields and gets a working personal agent in under five minutes.",
+      "who": "HR business partners, marketing coordinators, project managers — anyone who copies-and-adapts the same prompt into ChatGPT every week. Assumption: 50–200 such people in a mid-size org.",
+      "demo": "Employee types \"weekly status report from my notes\" → chooses the project template from the company library → clicks Run → sees a formatted report land in their email draft. No code visible.",
+      "why": "Completeness is this card's strongest criterion. The scope is tiny: one input type, one output type, one grounding doc per agent. A full end-to-end slice can run in week 1 using watsonx Orchestrate or Bob with a simple form UI. IBM technology has an obvious, load-bearing role.",
+      "risk": "The company knowledge library is often a mess of stale SharePoint folders. If connecting to it takes more than two days, the demo falls back to file upload — which still works but reduces the grounding story.",
+      "scores": {
+        "completeness": 5,
+        "creativity": 2,
+        "design": 5,
+        "effectiveness": 3,
+        "total": 15
+      },
+      "recommended": false,
+      "verdict": "Strong runner-up — use if the suggestion engine in Card B proves too hard in week 1."
+    },
+    {
+      "id": "b",
+      "title": "Self-Improving Agent Studio",
+      "direction": "new-app",
+      "pitch": "A no-code studio where employees build personal AI agents grounded in company material, then rate each result — and the agent proposes its own improvements based on the feedback pattern.",
+      "who": "Knowledge workers across functions (HR, legal, finance, ops) who repeatedly produce structured outputs from company documents and calendars. Assumption: 10–30% of a white-collar workforce.",
+      "demo": "Agent runs → produces a briefing doc → user clicks ★★★ and types \"too formal\" → agent surfaces a revised instruction (\"Use bullet points; match the tone of the linked template\") → user clicks Accept → next run is visibly better. The audience sees the loop close in 90 seconds.",
+      "why": "Most agent builders let you configure an agent once; this one learns from the person using it. Creativity & innovation is its strongest criterion. The feedback→suggestion loop is novel enough that judges can say \"I haven't seen it done this way.\" IBM watsonx.ai and Bob have necessary roles. With 2×20 h, a credible PoC is a working loop for one agent type in one department.",
+      "risk": "The suggestion engine — turning ratings + comments into prompt edits — is the hard part. If suggestion quality is poor in the demo, the loop looks like a toy. Week-1 gate: generate one good suggested edit from a thumbs-down + one comment using watsonx.ai.",
+      "scores": {
+        "completeness": 3,
+        "creativity": 5,
+        "design": 4,
+        "effectiveness": 4,
+        "total": 16
+      },
+      "recommended": true,
+      "verdict": "The feedback→improvement loop is the one thing that makes this more than another agent builder — and it is the demo moment judges remember."
+    },
+    {
+      "id": "c",
+      "title": "Department Agent Marketplace",
+      "direction": "modernise",
+      "pitch": "An IT-governed platform where department leads publish vetted agents to an internal marketplace; other employees subscribe, rate, and fork them — creating a self-curating library of org-specific agents.",
+      "who": "IT operations teams and department leads who today receive ad-hoc AI requests from every team, and employees who want agents but can't build them.",
+      "demo": "Department lead publishes a \"Vendor onboarding checklist\" agent → two other teams subscribe → one team forks it with a different grounding doc → fork appears as a rated variant in the catalog.",
+      "why": "Effectiveness & efficiency is this card's strongest axis — the network effect means every agent built benefits everyone. But this is ambitious: a marketplace needs auth, governance, version control and a critical mass of agents.",
+      "risk": "The PoC needs at least 5–8 pre-seeded agents to look like a marketplace, not a list of two. Building the governance layer competes with the core builder. With 2 people and 3 weeks, one of the two will be thin.",
+      "scores": {
+        "completeness": 2,
+        "creativity": 4,
+        "design": 3,
+        "effectiveness": 4,
+        "total": 13
+      },
+      "recommended": false,
+      "verdict": "Drop — too many moving parts for a 2-person team in 3 weeks."
+    },
+    {
+      "id": "d",
+      "title": "Bob-Powered Process Consultant",
+      "direction": "mcp",
+      "pitch": "An MCP server that exposes the company's process library (SOPs, policies, templates) to Bob, so any employee can ask 'what's the right process for X?' and get a step-by-step, context-aware answer — with the agent pre-configured to run the process.",
+      "who": "New hires and cross-functional project members who spend their first weeks asking 'where is the form for X?' and 'who approves Y?' Assumption: each new hire wastes ~3 h/week for the first month on process navigation.",
+      "demo": "Employee asks Bob: \"I need to onboard a new vendor\" → Bob reads the SOP via MCP, lists the five steps, opens the right form in the right system, and pre-fills what it knows. Employee never leaves Bob.",
+      "why": "Leans into what Bob and MCP do natively. Strongest on design & usability because the user never leaves their existing tool. The MCP angle differentiates it from plain RAG over internal docs.",
+      "risk": "Requires an MCP server connected to a real process library. If the library is unstructured or access is blocked, the demo runs on invented SOPs — which works for a PoC but loses the measured baseline argument.",
+      "scores": {
+        "completeness": 4,
+        "creativity": 3,
+        "design": 5,
+        "effectiveness": 3,
+        "total": 15
+      },
+      "recommended": false,
+      "verdict": "Good alternative if the team wants a faster, tighter PoC with less UI work."
+    }
+  ]
+}

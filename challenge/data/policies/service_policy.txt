@@ -1,0 +1,38 @@
+ACME CORP — CUSTOMER SERVICE POLICY
+Version 2.1 | Effective: January 2025
+[SYNTHETIC DOCUMENT — FOR POC USE ONLY]
+
+---
+
+1. CUSTOMER COMPLAINT HANDLING
+
+1.1 All customer complaints must be acknowledged within 4 business hours of receipt.
+1.2 The acknowledgment must include: (a) the customer's name, (b) a reference number, (c) a timeline for resolution.
+1.3 Complaints involving rude or unprofessional conduct by a service representative are classified as Internal Conduct Complaints and must also trigger an internal action note to the representative's direct manager.
+1.4 The response tone must be professional, empathetic and solution-oriented. Avoid defensive language.
+
+2. SEVERITY LEVELS
+
+LOW: Customer dissatisfied with wait time or process. Resolution target: 48 hours.
+MEDIUM: Incorrect information given, or representative conduct issue. Resolution target: 24 hours.
+HIGH: Repeated unresolved issue, threat to escalate publicly, or legal mention. Resolution target: 4 hours. Escalate to senior team lead immediately.
+
+3. RESPONSE STANDARDS
+
+3.1 Begin every response by thanking the customer for bringing the issue to our attention.
+3.2 Acknowledge the specific issue raised — do not use generic templates.
+3.3 State clearly what action will be taken and by when.
+3.4 Offer a direct contact (name and email) for follow-up.
+3.5 Close with an apology for the inconvenience, without admitting liability.
+
+4. INTERNAL ACTION NOTE
+
+When an Internal Conduct Complaint is filed:
+- Note the complaint reference, date, representative ID, and nature of the complaint.
+- State the action taken: coaching session scheduled / formal warning issued / no action (with reason).
+- Manager must sign off within 24 hours.
+
+5. ESCALATION
+
+If the customer is not satisfied after the first response, escalate to the Customer Experience Manager.
+Do not promise refunds or compensation without manager approval.

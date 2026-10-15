@@ -1,0 +1,49 @@
+ACME CORP — ESCALATION & CONDUCT GUIDE
+Version 1.3 | Effective: March 2025
+[SYNTHETIC DOCUMENT — FOR POC USE ONLY]
+
+---
+
+1. WHEN TO ESCALATE
+
+Escalate immediately (do not wait for first response) when:
+- Customer mentions legal action or regulatory complaint
+- Same issue has been open for more than 72 hours
+- Complaint involves a manager or senior staff member
+- Customer requests to speak to a director or above
+
+2. CONDUCT STANDARDS FOR SERVICE REPRESENTATIVES
+
+Representatives are expected to:
+- Use the customer's name at least once during each interaction
+- Never interrupt a customer while they are explaining their issue
+- Offer to repeat key points back to the customer to confirm understanding
+- Avoid jargon, acronyms, or internal terminology
+- Never place a customer on hold for more than 5 minutes without checking in
+
+Violations of conduct standards must be reported to the representative's direct manager within 2 business hours of the complaint being received.
+
+3. LANGUAGE GUIDELINES FOR WRITTEN RESPONSES
+
+AVOID:
+- "Unfortunately there is nothing we can do"
+- "That is not our policy"
+- "You should have read the terms"
+- Passive-aggressive phrasing
+
+USE INSTEAD:
+- "I understand how frustrating this must be"
+- "Let me find the best way to help you"
+- "Here is what I can do for you right now"
+- "I will personally follow up to make sure this is resolved"
+
+4. FEEDBACK LOOP
+
+After every complaint resolved, the handling manager rates the quality of the response:
+1 = Needs immediate coaching | 3 = Meets standard | 5 = Exemplary
+Ratings below 3 trigger an automatic coaching session booking.
+
+5. DOCUMENTATION
+
+Every complaint response and internal note must be logged in the CRM within 1 hour of sending.
+Responses sent without CRM logging are a compliance violation.

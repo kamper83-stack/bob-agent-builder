@@ -1,0 +1,21 @@
+run_id,complaint_id,agent_version,output_email_draft,output_action_note,rating_stars,rating_comment,improvement_accepted
+RUN-0001,CMP-0035,1,(generated at runtime),(generated at runtime),2,,True
+RUN-0002,CMP-0024,1,(generated at runtime),(generated at runtime),2,,True
+RUN-0003,CMP-0036,1,(generated at runtime),(generated at runtime),2,,False
+RUN-0001,CMP-0001,1,(generated at runtime),(generated at runtime),3,Too formal and generic. Needs to feel more human.,False
+RUN-0005,CMP-0016,1,(generated at runtime),(generated at runtime),4,,False
+RUN-0006,CMP-0015,1,(generated at runtime),(generated at runtime),3,,False
+RUN-0007,CMP-0015,1,(generated at runtime),(generated at runtime),3,,False
+RUN-0008,CMP-0018,1,(generated at runtime),(generated at runtime),5,,True
+RUN-0009,CMP-0002,1,(generated at runtime),(generated at runtime),1,,True
+RUN-0010,CMP-0021,1,(generated at runtime),(generated at runtime),4,,True
+RUN-0011,CMP-0003,1,(generated at runtime),(generated at runtime),5,,False
+RUN-0012,CMP-0013,1,(generated at runtime),(generated at runtime),3,,False
+RUN-0013,CMP-0003,1,(generated at runtime),(generated at runtime),3,,True
+RUN-0014,CMP-0001,1,(generated at runtime),(generated at runtime),2,,True
+RUN-0002,CMP-0001,2,(generated at runtime),(generated at runtime),5,,True
+RUN-0016,CMP-0029,1,(generated at runtime),(generated at runtime),2,,True
+RUN-0017,CMP-0040,1,(generated at runtime),(generated at runtime),2,,True
+RUN-0018,CMP-0013,1,(generated at runtime),(generated at runtime),4,,False
+RUN-0019,CMP-0030,1,(generated at runtime),(generated at runtime),4,,True
+RUN-0020,CMP-0001,1,(generated at runtime),(generated at runtime),5,,False

@@ -1,0 +1,111 @@
+{
+  "generator": "challenge-kit synth",
+  "synthetic": true,
+  "seed": 42,
+  "files": [
+    "service_reps.csv",
+    "complaints.csv",
+    "agent_runs.csv"
+  ],
+  "tables": {
+    "service_reps": 8,
+    "complaints": 40,
+    "agent_runs": 20
+  },
+  "cases": {
+    "complaints": [
+      {
+        "label": "demo_main — rude tone, medium severity, open",
+        "count": 1,
+        "rows": [
+          "CMP-0001"
+        ]
+      },
+      {
+        "label": "demo_followup — same rep, high severity, escalated",
+        "count": 1,
+        "rows": [
+          "CMP-0002"
+        ]
+      },
+      {
+        "label": "improvement_test — after feedback accepted",
+        "count": 1,
+        "rows": [
+          "CMP-0003"
+        ]
+      },
+      {
+        "label": "standard rude tone",
+        "count": 7,
+        "rows": [
+          "CMP-0007",
+          "CMP-0010",
+          "CMP-0014",
+          "CMP-0018",
+          "CMP-0019",
+          "CMP-0023",
+          "CMP-0036"
+        ]
+      },
+      {
+        "label": "standard unresolved issue",
+        "count": 10,
+        "rows": [
+          "CMP-0002",
+          "CMP-0003",
+          "CMP-0011",
+          "CMP-0016",
+          "CMP-0021",
+          "CMP-0022",
+          "CMP-0026",
+          "CMP-0037",
+          "CMP-0039",
+          "CMP-0040"
+        ]
+      },
+      {
+        "label": "standard resolved",
+        "count": 20,
+        "rows": [
+          "CMP-0001",
+          "CMP-0004",
+          "CMP-0005",
+          "CMP-0006",
+          "CMP-0012",
+          "CMP-0013",
+          "CMP-0015",
+          "CMP-0020",
+          "CMP-0024",
+          "CMP-0025",
+          "CMP-0027",
+          "CMP-0028",
+          "CMP-0029",
+          "CMP-0030",
+          "CMP-0031",
+          "CMP-0032",
+          "CMP-0033",
+          "CMP-0034",
+          "CMP-0035",
+          "CMP-0038"
+        ]
+      }
+    ],
+    "agent_runs": [
+      {
+        "label": "demo_run_1 — before improvement",
+        "count": 1,
+        "rows": [
+          "RUN-0001"
+        ]
+      },
+      {
+        "label": "demo_run_2 — after improvement accepted",
+        "count": 1,
+        "rows": [
+          "RUN-0002"
+        ]
+      }
+    ]
+  }
+}
