@@ -5,33 +5,35 @@ The judges read these to confirm the work was done inside Bob IDE.
 
 ## What to capture — after completing each issue
 
-Take **two screenshots** at the end of every Bob IDE session:
+Take **one screenshot** at the end of every Bob IDE session:
 
-### Screenshot 1 — Todo list (all items checked ✅)
-- The todo list panel in Bob IDE showing every item marked as done
-- This proves the task was completed inside Bob
+### The Task popup with Todo List ✅
+1. At the end of your session, click the **Task name** at the top of the Bob IDE chat
+2. A popup appears showing:
+   - Task title
+   - Context Length, Task Id, Workspace, Bobcoins
+   - **Todo List X/X** — all items green ✅
+3. Screenshot this popup
 
-### Screenshot 2 — End of chat thread
-- Scroll to the bottom of the Bob IDE chat for that session
-- Capture Bob's final message (the summary of what was built/created)
+This is all the judges need — it proves the task was completed inside Bob IDE.
 
 ## File naming
 
 Name each file clearly so it maps to the issue:
 
-| Issue | Screenshot 1 | Screenshot 2 |
-|---|---|---|
-| A1 — watsonx client | `A1-todo.png` | `A1-chat.png` |
-| A2 — agent runner | `A2-todo.png` | `A2-chat.png` |
-| A3 — mock policy store | `A3-todo.png` | `A3-chat.png` |
-| A4 — improvement engine | `A4-todo.png` | `A4-chat.png` |
-| A5 — gate test | `A5-todo.png` | `A5-chat.png` |
-| B1 — scaffold app | `B1-todo.png` | `B1-chat.png` |
-| B2 — define screen | `B2-todo.png` | `B2-chat.png` |
-| B3 — test screen | `B3-todo.png` | `B3-chat.png` |
-| B4 — improve screen | `B4-todo.png` | `B4-chat.png` |
-| B5 — wire to backend | `B5-todo.png` | `B5-chat.png` |
-| S1 — smoke test | `S1-todo.png` | `S1-chat.png` |
+| Issue | Screenshot |
+|---|---|
+| A1 — watsonx client | `A1.png` |
+| A2 — agent runner | `A2.png` |
+| A3 — mock policy store | `A3.png` |
+| A4 — improvement engine | `A4.png` |
+| A5 — gate test | `A5.png` |
+| B1 — scaffold app | `B1.png` |
+| B2 — define screen | `B2.png` |
+| B3 — test screen | `B3.png` |
+| B4 — improve screen | `B4.png` |
+| B5 — wire to backend | `B5.png` |
+| S1 — smoke test | `S1.png` |
 
 ## When to do this
 
