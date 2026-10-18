@@ -16,7 +16,7 @@ export default function NavBar() {
     steps.find((s) => pathname.startsWith(s.href))?.step ?? 0;
 
   return (
-    <header className="sticky top-0 z-10 border-b border-gray-200 bg-white">
+    <header className="sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
       <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
         {/* App name */}
         <Link href="/" className="text-lg font-semibold text-gray-900 tracking-tight">
