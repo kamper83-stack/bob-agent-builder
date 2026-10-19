@@ -3,9 +3,13 @@ test_improvement_gate.py
 ------------------------
 Week 1 gate test — proves the core improvement loop works end-to-end.
 
-Uses 10 planted complaints from challenge/data/complaints.csv.
-For each: runs the agent, simulates a 3-star rating + comment, calls the
-improvement engine, and checks that the suggestion is non-trivial.
+For each of 10 planted complaints:
+  1. Run the agent  →  get {email_draft, action_note}
+  2. Simulate a 3-star rating + comment
+  3. Call the improvement engine with the AGENT OUTPUT as context so the
+     suggestion is grounded in what was actually produced (not just the
+     starter instructions).
+  4. Check the suggestion is non-trivial.
 
 Pass criteria per complaint:
   - Suggestion is non-empty
@@ -14,7 +18,7 @@ Pass criteria per complaint:
 
 Gate passes if 8 or more of 10 complaints pass.
 
-Run:
+Run (from repo root):
     python tests/test_improvement_gate.py
 
 Exits 0 on pass (>=8/10), 1 on fail.
@@ -30,7 +34,7 @@ import csv
 import sys
 from pathlib import Path
 
-# Allow imports from repo root
+# Run from repo root: python tests/test_improvement_gate.py
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.agent_runner import run_agent_by_policy_id
@@ -77,58 +81,70 @@ def is_useful_suggestion(suggestion: str, comment: str) -> bool:
 
 
 def main() -> None:
-    complaints_path = Path(__file__).parent.parent / "challenge" / "data" / "complaints.csv"
+    complaints_path = (
+        Path(__file__).parent.parent / "challenge" / "data" / "complaints.csv"
+    )
     all_complaints = load_complaints(complaints_path)
 
     passed = 0
-    failed = 0
+    skipped = 0
     results = []
 
     for cid in TEST_COMPLAINT_IDS:
         complaint_text = all_complaints.get(cid)
         if not complaint_text:
             print(f"  [SKIP] {cid} — not found in CSV")
+            skipped += 1
             results.append((cid, "SKIP", "not found"))
             continue
 
-        print(f"\nRunning {cid}: \"{complaint_text[:60]}...\"" if len(complaint_text) > 60
-              else f"\nRunning {cid}: \"{complaint_text}\"")
+        preview = complaint_text[:60] + "..." if len(complaint_text) > 60 else complaint_text
+        print(f"\nRunning {cid}: \"{preview}\"")
 
         try:
-            # Step 1 — run the agent
-            run_agent_by_policy_id(complaint_text, POLICY_DOC_ID, STARTER_INSTRUCTIONS)
+            # Step 1 — run the agent on the real complaint
+            agent_result = run_agent_by_policy_id(
+                complaint_text, POLICY_DOC_ID, STARTER_INSTRUCTIONS
+            )
+            email_draft = agent_result["email_draft"]
 
-            # Step 2 — generate improvement suggestion
+            # Step 2 — build enriched instructions that include the actual output
+            # so the improvement engine is grounded in what was produced.
+            context_instructions = (
+                f"{STARTER_INSTRUCTIONS}\n\n"
+                f"[Last output email draft]:\n{email_draft[:300]}"
+            )
+
+            # Step 3 — generate improvement suggestion based on real output
             suggestion = suggest_improvement(
-                current_instructions=STARTER_INSTRUCTIONS,
+                current_instructions=context_instructions,
                 rating=SIMULATED_RATING,
                 comment=SIMULATED_COMMENT,
             )
 
-            # Step 3 — evaluate
+            # Step 4 — evaluate
             if is_useful_suggestion(suggestion, SIMULATED_COMMENT):
                 print(f"  [PASS] Suggestion ({len(suggestion.split())} words): {suggestion[:100]}...")
                 passed += 1
                 results.append((cid, "PASS", suggestion))
             else:
                 print(f"  [FAIL] Suggestion too short or trivial: \"{suggestion}\"")
-                failed += 1
                 results.append((cid, "FAIL", suggestion))
 
         except Exception as e:
             print(f"  [ERROR] {e}")
-            failed += 1
             results.append((cid, "ERROR", str(e)))
 
+    runnable = len(TEST_COMPLAINT_IDS) - skipped
     print(f"\n{'='*60}")
-    print(f"Gate result: {passed}/{len(TEST_COMPLAINT_IDS)} passed")
+    print(f"Gate result: {passed}/{runnable} passed (skipped {skipped})")
     print(f"Threshold:   {PASS_THRESHOLD}/{len(TEST_COMPLAINT_IDS)}")
 
     if passed >= PASS_THRESHOLD:
-        print("✓ GATE PASSED")
+        print("\u2713 GATE PASSED")
         sys.exit(0)
     else:
-        print("✗ GATE FAILED")
+        print("\u2717 GATE FAILED")
         sys.exit(1)
 
 
