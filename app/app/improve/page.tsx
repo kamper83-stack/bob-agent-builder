@@ -2,20 +2,23 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { getApiUrl } from "../../lib/api";
 import { useAgent } from "../context/AgentContext";
 
 const STARS = [1, 2, 3, 4, 5];
 
 export default function ImprovePage() {
   const router = useRouter();
-  const { agentDef, setAgentDef, runResult, setMaxStep } = useAgent();
+  const { agentDef, setAgentDef, runResult } = useAgent();
 
   const [rating, setRating] = useState<number>(0);
   const [hovered, setHovered] = useState<number>(0);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [suggestion, setSuggestion] = useState<string | null>(null);
+  // editable so user can tweak before accepting (per review feedback)
+  const [suggestion, setSuggestion] = useState<string>("");
+  const hasSuggestion = suggestion.trim().length > 0;
   const [accepted, setAccepted] = useState(false);
 
   const hasRun = runResult !== null;
@@ -24,29 +27,25 @@ export default function ImprovePage() {
   async function handleGetSuggestion() {
     setLoading(true);
     setError(null);
-    setSuggestion(null);
+    setSuggestion("");
 
     try {
-      const res = await fetch(
-        "/api/improve",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            current_instructions: agentDef.agentInstructions,
-            rating,
-            comment: comment.trim() || "No comment provided.",
-          }),
-        }
-      );
+      const res = await fetch(getApiUrl("/improve"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          current_instructions: agentDef.agentInstructions,
+          rating,
+          comment: comment.trim() || "No comment provided.",
+        }),
+      });
 
       if (!res.ok) {
-        const body = await res.text();
-        throw new Error(`API error ${res.status}: ${body}`);
+        throw new Error(`API error ${res.status}`);
       }
 
       const data = await res.json();
-      setSuggestion(data.suggestion);
+      setSuggestion(data.suggestion ?? "");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
@@ -59,7 +58,6 @@ export default function ImprovePage() {
     setAgentDef({
       agentInstructions: agentDef.agentInstructions + "\n\n" + suggestion,
     });
-    setMaxStep(3);
     setAccepted(true);
   }
 
@@ -80,7 +78,7 @@ export default function ImprovePage() {
         <div className="mb-8 rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300">
           No run to rate yet.{" "}
           <button
-            onClick={() => router.push("/build")}
+            onClick={() => router.push("/test")}
             className="underline font-medium"
           >
             Go to Test
@@ -150,7 +148,7 @@ export default function ImprovePage() {
       </div>
 
       {/* Get suggestion button */}
-      {!suggestion && !accepted && (
+      {!hasSuggestion && !accepted && (
         <button
           onClick={handleGetSuggestion}
           disabled={!canSubmit || !hasRun}
@@ -167,16 +165,24 @@ export default function ImprovePage() {
         </div>
       )}
 
-      {/* Suggestion */}
-      {suggestion && !accepted && (
+      {/* Suggestion — editable textarea so user can tweak before accepting */}
+      {hasSuggestion && !accepted && (
         <div className="mt-8 space-y-4">
           <div>
-            <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-              Suggested instruction change
-            </h2>
-            <div className="rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">
-              {suggestion}
-            </div>
+            <label
+              htmlFor="suggestion"
+              className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
+            >
+              Suggested instruction change{" "}
+              <span className="font-normal text-gray-400">(you can edit before accepting)</span>
+            </label>
+            <textarea
+              id="suggestion"
+              rows={4}
+              value={suggestion}
+              onChange={(e) => setSuggestion(e.target.value)}
+              className="w-full rounded-lg border border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20 px-4 py-3 text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            />
           </div>
 
           <div className="flex gap-3">
@@ -187,7 +193,7 @@ export default function ImprovePage() {
               Accept &amp; update agent →
             </button>
             <button
-              onClick={() => setSuggestion(null)}
+              onClick={() => setSuggestion("")}
               className="rounded-full border border-gray-300 dark:border-gray-600 px-6 py-3 text-sm font-semibold text-gray-600 dark:text-gray-300 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               Reject
@@ -203,7 +209,7 @@ export default function ImprovePage() {
             ✓ Agent instructions updated. Run another test to see the improvement.
           </div>
           <button
-            onClick={() => router.push("/build")}
+            onClick={() => router.push("/test")}
             className="w-full rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
           >
             Run agent again →
