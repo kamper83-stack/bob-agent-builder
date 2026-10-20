@@ -28,6 +28,24 @@ export default function NavBar() {
           {steps.map((s, i) => {
             const isActive = s.step === activeStep;
             const isDone = activeStep > s.step;
+            const isFuture = s.step > activeStep;
+
+            const stepContent = (
+              <>
+                <span
+                  className={`flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold ${
+                    isActive
+                      ? "bg-white text-blue-600"
+                      : isDone
+                      ? "bg-blue-100 text-blue-600"
+                      : "bg-gray-100 text-gray-400"
+                  }`}
+                >
+                  {isDone ? "✓" : s.step}
+                </span>
+                {s.label}
+              </>
+            );
 
             return (
               <div key={s.href} className="flex items-center gap-2">
@@ -38,29 +56,25 @@ export default function NavBar() {
                     }`}
                   />
                 )}
-                <Link
-                  href={s.href}
-                  className={`flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-blue-600 text-white"
-                      : isDone
-                      ? "text-blue-600 hover:bg-blue-50"
-                      : "text-gray-400 hover:bg-gray-100"
-                  }`}
-                >
+                {isFuture ? (
                   <span
-                    className={`flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold ${
+                    className="flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium text-gray-400 cursor-not-allowed"
+                    aria-disabled="true"
+                  >
+                    {stepContent}
+                  </span>
+                ) : (
+                  <Link
+                    href={s.href}
+                    className={`flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition-colors ${
                       isActive
-                        ? "bg-white text-blue-600"
-                        : isDone
-                        ? "bg-blue-100 text-blue-600"
-                        : "bg-gray-100 text-gray-400"
+                        ? "bg-blue-600 text-white"
+                        : "text-blue-600 hover:bg-blue-50"
                     }`}
                   >
-                    {isDone ? "✓" : s.step}
-                  </span>
-                  {s.label}
-                </Link>
+                    {stepContent}
+                  </Link>
+                )}
               </div>
             );
           })}

@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div className="mx-auto max-w-4xl px-6 py-16 text-center">
-      <h1 className="text-4xl font-bold text-gray-900 mb-4">
+      <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
         Welcome to Agent Studio
       </h1>
       <p className="text-lg text-gray-500 mb-10 max-w-xl mx-auto">
