@@ -9,7 +9,7 @@
  * Persisted to localStorage so a page refresh doesn't wipe the session.
  */
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 export interface AgentDef {
   inputType: string;
@@ -48,22 +48,22 @@ const AgentContext = createContext<AgentContextValue>({
 });
 
 export function AgentProvider({ children }: { children: React.ReactNode }) {
-  const [agentDef, setAgentDefState] = useState<AgentDef>(() => {
-    if (typeof window === "undefined") return DEFAULT_DEF;
+  const [agentDef, setAgentDefState] = useState<AgentDef>(DEFAULT_DEF);
+
+  // Hydrate from localStorage after mount to avoid SSR/hydration mismatch (C2)
+  useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? (JSON.parse(stored) as AgentDef) : DEFAULT_DEF;
-    } catch {
-      return DEFAULT_DEF;
-    }
-  });
+      if (stored) setAgentDefState(JSON.parse(stored) as AgentDef);
+    } catch {}
+  }, []);
 
   const [runResult, setRunResult] = useState<RunResult | null>(null);
 
   function setAgentDef(patch: Partial<AgentDef>) {
     setAgentDefState((prev) => {
       const next = { ...prev, ...patch };
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch (e) { console.warn("AgentContext: localStorage write failed", e); }
       return next;
     });
   }
