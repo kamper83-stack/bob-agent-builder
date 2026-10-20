@@ -1,0 +1,4 @@
+# Secrets & credentials — never commit these
+.secrets
+*.env
+*.env.local
