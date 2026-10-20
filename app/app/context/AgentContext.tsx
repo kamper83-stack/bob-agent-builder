@@ -1,12 +1,9 @@
 "use client";
 
 /**
- * AgentContext.tsx
- * ----------------
- * Shared state for the agent definition and last run result across
- * the Define → Test → Improve flow.
- *
- * Persisted to localStorage so a page refresh doesn't wipe the session.
+ * AgentContext.tsx — B5 update
+ * Adds maxStep tracking so NavBar can unlock steps as the user progresses.
+ * maxStep: 0 = home, 1 = define done, 2 = test done, 3 = improve done
  */
 
 import React, { createContext, useContext, useState } from "react";
@@ -29,6 +26,8 @@ interface AgentContextValue {
   setAgentDef: (patch: Partial<AgentDef>) => void;
   runResult: RunResult | null;
   setRunResult: (result: RunResult | null) => void;
+  maxStep: number;
+  setMaxStep: (step: number) => void;
 }
 
 const DEFAULT_DEF: AgentDef = {
@@ -39,12 +38,15 @@ const DEFAULT_DEF: AgentDef = {
 };
 
 const STORAGE_KEY = "agent-studio:agentDef";
+const MAX_STEP_KEY = "agent-studio:maxStep";
 
 const AgentContext = createContext<AgentContextValue>({
   agentDef: DEFAULT_DEF,
   setAgentDef: () => { console.warn("useAgent called outside AgentProvider"); },
   runResult: null,
   setRunResult: () => {},
+  maxStep: 0,
+  setMaxStep: () => {},
 });
 
 export function AgentProvider({ children }: { children: React.ReactNode }) {
@@ -60,6 +62,15 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
 
   const [runResult, setRunResult] = useState<RunResult | null>(null);
 
+  const [maxStep, setMaxStepState] = useState<number>(() => {
+    if (typeof window === "undefined") return 0;
+    try {
+      return parseInt(localStorage.getItem(MAX_STEP_KEY) ?? "0", 10);
+    } catch {
+      return 0;
+    }
+  });
+
   function setAgentDef(patch: Partial<AgentDef>) {
     setAgentDefState((prev) => {
       const next = { ...prev, ...patch };
@@ -68,8 +79,16 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
     });
   }
 
+  function setMaxStep(step: number) {
+    setMaxStepState((prev) => {
+      const next = Math.max(prev, step);
+      try { localStorage.setItem(MAX_STEP_KEY, String(next)); } catch {}
+      return next;
+    });
+  }
+
   return (
-    <AgentContext.Provider value={{ agentDef, setAgentDef, runResult, setRunResult }}>
+    <AgentContext.Provider value={{ agentDef, setAgentDef, runResult, setRunResult, maxStep, setMaxStep }}>
       {children}
     </AgentContext.Provider>
   );

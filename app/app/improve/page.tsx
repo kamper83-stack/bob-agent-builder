@@ -8,7 +8,7 @@ const STARS = [1, 2, 3, 4, 5];
 
 export default function ImprovePage() {
   const router = useRouter();
-  const { agentDef, setAgentDef, runResult } = useAgent();
+  const { agentDef, setAgentDef, runResult, setMaxStep } = useAgent();
 
   const [rating, setRating] = useState<number>(0);
   const [hovered, setHovered] = useState<number>(0);
@@ -28,7 +28,7 @@ export default function ImprovePage() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"}/improve`,
+        "/api/improve",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -59,6 +59,7 @@ export default function ImprovePage() {
     setAgentDef({
       agentInstructions: agentDef.agentInstructions + "\n\n" + suggestion,
     });
+    setMaxStep(3);
     setAccepted(true);
   }
 

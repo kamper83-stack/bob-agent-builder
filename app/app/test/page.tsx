@@ -6,7 +6,7 @@ import { useAgent } from "../context/AgentContext";
 
 export default function TestPage() {
   const router = useRouter();
-  const { agentDef, setRunResult } = useAgent();
+  const { agentDef, setRunResult, setMaxStep } = useAgent();
 
   const [complaintText, setComplaintText] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ export default function TestPage() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"}/run`,
+        "/api/run",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -43,6 +43,7 @@ export default function TestPage() {
       const data = await res.json();
       setResult(data);
       setRunResult({ ...data, complaint_text: complaintText });
+      setMaxStep(2);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
