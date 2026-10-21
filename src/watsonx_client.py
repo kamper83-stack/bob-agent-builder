@@ -6,10 +6,10 @@ Reads credentials from environment / .env file.
 
 Model used: ibm/granite-13b-instruct-v2
 
-Required env vars:
+Required env vars (copy src/.env.example → src/.env and fill in):
   WATSONX_APIKEY      — IBM Cloud API key
   WATSONX_PROJECT_ID  — watsonx.ai project ID
-  WATSONX_URL         — regional endpoint, e.g. https://us-south.ml.cloud.ibm.com
+  WATSONX_URL         — regional endpoint (default: https://us-south.ml.cloud.ibm.com)
 """
 
 import os
