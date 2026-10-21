@@ -11,10 +11,9 @@ Exposes two endpoints consumed by the Next.js API proxy routes:
 Start:
     uvicorn src.api:app --reload
 
-Required env vars (same as watsonx_client.py):
-    WATSONX_APIKEY
-    WATSONX_PROJECT_ID
-    WATSONX_URL  (optional — defaults to us-south endpoint)
+Required env vars (see src/.env.example):
+    GEMINI_API_KEY
+    GEMINI_MODEL  (optional — defaults to gemini-1.5-flash)
 """
 
 from fastapi import FastAPI, HTTPException

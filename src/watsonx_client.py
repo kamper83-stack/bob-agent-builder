@@ -1,81 +1,87 @@
 """
-watsonx_client.py
------------------
-Thin wrapper around the ibm-watsonx-ai SDK.
+gemini_client.py (kept as watsonx_client.py for import compatibility)
+----------------------------------------------------------------------
+Thin wrapper around the Google Gen AI SDK (Gemini).
 Reads credentials from environment / .env file.
 
-Model used: ibm/granite-13b-instruct-v2
-
 Required env vars (copy src/.env.example → src/.env and fill in):
-  WATSONX_APIKEY      — IBM Cloud API key
-  WATSONX_PROJECT_ID  — watsonx.ai project ID
-  WATSONX_URL         — regional endpoint (default: https://us-south.ml.cloud.ibm.com)
+  GEMINI_API_KEY  — Google AI Studio API key
+  GEMINI_MODEL    — model alias (default: gemini-flash-latest)
 """
 
 import os
 from dotenv import load_dotenv
-from ibm_watsonx_ai import Credentials
-from ibm_watsonx_ai.foundation_models import ModelInference
-from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
+from google import genai
+from google.genai import types
 
 load_dotenv()
 
 # ── defaults ──────────────────────────────────────────────────────────────────
-DEFAULT_MODEL = "ibm/granite-13b-instruct-v2"
-DEFAULT_PARAMS = {
-    GenParams.MAX_NEW_TOKENS: 800,
-    GenParams.TEMPERATURE: 0.3,
-    GenParams.STOP_SEQUENCES: [],
-}
+DEFAULT_MODEL = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
+DEFAULT_TEMPERATURE = 0.3
+DEFAULT_MAX_TOKENS = 800
+
+
+def _get_client() -> genai.Client:
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        raise EnvironmentError(
+            "GEMINI_API_KEY is not set. "
+            "Add it to src/.env or export it in your shell."
+        )
+    return genai.Client(api_key=api_key)
 
 
 def call_model(
     prompt: str,
-    model_id: str = DEFAULT_MODEL,
+    model_id: str | None = None,
     params: dict | None = None,
+    system_instruction: str | None = None,
+    response_schema: type | None = None,
 ) -> str:
     """
-    Send a prompt to watsonx.ai and return the generated text.
+    Send a prompt to Gemini and return the generated text.
 
     Args:
-        prompt:   The full prompt string.
-        model_id: watsonx.ai model ID (default: granite-13b-instruct-v2).
-        params:   Optional generation parameters (merged with defaults).
+        prompt:              The user prompt string.
+        model_id:            Gemini model alias (default: GEMINI_MODEL env var).
+        params:              Optional overrides: temperature (float),
+                             max_output_tokens (int).
+        system_instruction:  Optional system prompt, passed as a first-class
+                             GenerateContentConfig field.
+        response_schema:     Optional Pydantic model. When provided the response
+                             is returned as JSON matching that schema.
 
     Returns:
-        The generated text as a string.
+        The generated text (or JSON string when response_schema is set).
     """
-    api_key = os.environ.get("WATSONX_APIKEY")
-    project_id = os.environ.get("WATSONX_PROJECT_ID")
-    url = os.environ.get("WATSONX_URL", "https://us-south.ml.cloud.ibm.com")
+    client = _get_client()
+    p = params or {}
 
-    if not api_key:
-        raise EnvironmentError(
-            "WATSONX_APIKEY is not set. "
-            "Add it to .env or export it in your shell."
-        )
-    if not project_id:
-        raise EnvironmentError(
-            "WATSONX_PROJECT_ID is not set. "
-            "Add it to .env or export it in your shell."
-        )
-
-    merged_params = {**DEFAULT_PARAMS, **(params or {})}
-    model = ModelInference(
-        model_id=model_id,
-        credentials=Credentials(url=url, api_key=api_key),
-        project_id=project_id,
-        params=merged_params,
+    config_kwargs: dict = dict(
+        temperature=p.get("temperature", DEFAULT_TEMPERATURE),
+        max_output_tokens=p.get("max_output_tokens", DEFAULT_MAX_TOKENS),
     )
-    return model.generate_text(prompt=prompt)
+    if system_instruction:
+        config_kwargs["system_instruction"] = system_instruction
+    if response_schema is not None:
+        config_kwargs["response_mime_type"] = "application/json"
+        config_kwargs["response_schema"] = response_schema
+
+    response = client.models.generate_content(
+        model=model_id or DEFAULT_MODEL,
+        contents=prompt,
+        config=types.GenerateContentConfig(**config_kwargs),
+    )
+    return response.text
 
 
 if __name__ == "__main__":
     import sys
 
-    print("Connecting to watsonx.ai...")
+    print("Connecting to Gemini...")
     try:
-        response = call_model("In one sentence, what is IBM watsonx.ai?")
+        response = call_model("In one sentence, what is Google Gemini?")
         print("\n✓ Response received:")
         print("-" * 60)
         print(response)
