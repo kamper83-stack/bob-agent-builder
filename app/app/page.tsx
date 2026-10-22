@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAgent } from "./context/AgentContext";
 
@@ -17,7 +16,6 @@ export default function Home() {
   const { savedAgents, loadAgent, deleteAgent, setAgentDef, setAgentName, setExamples, setUploadedDoc, setProcessSteps } = useAgent();
 
   function handleNew() {
-    // Reset the builder state
     setAgentDef({ inputType: "", outputType: "", policyDocId: "service_policy", agentInstructions: "" });
     setAgentName("");
     setExamples([]);
@@ -39,58 +37,58 @@ export default function Home() {
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">
       {/* Header */}
-      <div className="flex items-center justify-between mb-10">
+      <div className="flex items-start justify-between mb-10">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Agents</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="font-display text-3xl font-semibold text-text-primary">My Agents</h1>
+          <p className="mt-1.5 text-sm text-text-secondary">
             Build, tune, and run AI agents grounded in company knowledge.
           </p>
         </div>
         <button
           onClick={handleNew}
-          className="rounded-full bg-gray-900 dark:bg-gray-100 px-5 py-2.5 text-sm font-semibold text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-300 transition-colors"
+          className="rounded-md bg-text-primary px-5 py-2.5 text-sm font-semibold text-surface hover:opacity-80 transition-opacity"
         >
-          + New agent
+          New agent
         </button>
       </div>
 
       {/* Empty state */}
       {savedAgents.length === 0 && (
-        <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-600 px-8 py-16 text-center">
-          <p className="text-sm font-medium text-gray-500 mb-4">No agents yet</p>
-          <p className="text-xs text-gray-400 mb-6 max-w-sm mx-auto">
+        <div className="rounded-md border border-dashed border-border-strong px-8 py-16 text-center">
+          <p className="text-sm font-medium text-text-secondary mb-3">No agents yet</p>
+          <p className="text-sm text-text-tertiary mb-8 max-w-sm mx-auto leading-relaxed">
             Create your first agent — describe what it receives, define its steps, and show it example outputs.
           </p>
           <button
             onClick={handleNew}
-            className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+            className="rounded-md bg-text-primary px-6 py-2.5 text-sm font-semibold text-surface hover:opacity-80 transition-opacity"
           >
-            Build your first agent →
+            Build your first agent
           </button>
         </div>
       )}
 
       {/* Agent cards */}
       {savedAgents.length > 0 && (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           {savedAgents.map((agent) => (
             <div
               key={agent.id}
-              className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 flex flex-col gap-3 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+              className="rounded-md border border-border-subtle bg-surface p-5 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow"
             >
               {/* Card header */}
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                  <h2 className="text-sm font-semibold text-text-primary truncate">
                     {agent.name}
                   </h2>
-                  <p className="text-xs text-gray-400 mt-0.5">
+                  <p className="text-xs text-text-tertiary mt-0.5">
                     Saved {formatDate(agent.savedAt)}
                   </p>
                 </div>
                 <button
                   onClick={() => deleteAgent(agent.id)}
-                  className="shrink-0 text-gray-300 hover:text-red-400 transition-colors text-lg leading-none mt-0.5"
+                  className="shrink-0 text-text-tertiary hover:text-red-600 transition-colors text-sm leading-none mt-0.5"
                   aria-label="Delete agent"
                 >
                   ×
@@ -100,19 +98,19 @@ export default function Home() {
               {/* Meta */}
               <div className="space-y-1">
                 {agent.agentDef.inputType && (
-                  <p className="text-xs text-gray-500 truncate">
-                    <span className="font-medium text-gray-600 dark:text-gray-400">Receives:</span>{" "}
+                  <p className="text-xs text-text-secondary truncate">
+                    <span className="font-medium text-text-primary">Receives:</span>{" "}
                     {agent.agentDef.inputType}
                   </p>
                 )}
                 {agent.agentDef.outputType && (
-                  <p className="text-xs text-gray-500 truncate">
-                    <span className="font-medium text-gray-600 dark:text-gray-400">Produces:</span>{" "}
+                  <p className="text-xs text-text-secondary truncate">
+                    <span className="font-medium text-text-primary">Produces:</span>{" "}
                     {agent.agentDef.outputType}
                   </p>
                 )}
                 {agent.processSteps.length > 0 && (
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-text-tertiary">
                     {agent.processSteps.length} step{agent.processSteps.length !== 1 ? "s" : ""}
                   </p>
                 )}
@@ -122,13 +120,13 @@ export default function Home() {
               <div className="flex gap-2 mt-1">
                 <button
                   onClick={() => handleOpen(agent.id)}
-                  className="flex-1 rounded-full bg-gray-900 dark:bg-gray-100 px-4 py-2 text-xs font-semibold text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-300 transition-colors"
+                  className="flex-1 rounded-md bg-text-primary px-4 py-2 text-xs font-semibold text-surface hover:opacity-80 transition-opacity"
                 >
-                  ▶ Run
+                  Run
                 </button>
                 <button
                   onClick={() => handleEdit(agent.id)}
-                  className="flex-1 rounded-full border border-gray-300 dark:border-gray-600 px-4 py-2 text-xs font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="flex-1 rounded-md border border-border-strong px-4 py-2 text-xs font-semibold text-text-secondary hover:bg-canvas transition-colors"
                 >
                   Edit
                 </button>
