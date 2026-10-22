@@ -118,9 +118,9 @@ export default function DefinePage() {
         <button
           onClick={handleSave}
           disabled={!isValid}
-          className="w-full rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full rounded-md bg-text-primary px-6 py-3 text-sm font-semibold text-surface transition-opacity hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Save and continue →
+          Save and continue
         </button>
       </div>
     </div>
