@@ -67,10 +67,10 @@ export default function ImprovePage() {
     <div className="mx-auto max-w-2xl px-6 py-12">
       {/* Page heading */}
       <div className="mb-10">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-text-primary">
           Improve your agent
         </h1>
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-text-secondary">
           Rate the last output and let the agent improve its own instructions.
         </p>
       </div>
@@ -91,11 +91,11 @@ export default function ImprovePage() {
 
       {/* Last run summary */}
       {hasRun && (
-        <div className="mb-8 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4">
+        <div className="mb-8 rounded-lg border border-border-subtle bg-surface px-4 py-4">
           <p className="text-sm font-semibold text-text-secondary mb-2">
             Last run output
           </p>
-          <p className="text-sm text-gray-700 dark:text-gray-200 line-clamp-3 whitespace-pre-wrap">
+          <p className="text-sm text-text-primary line-clamp-3 whitespace-pre-wrap">
             {runResult!.email_draft}
           </p>
         </div>
@@ -103,7 +103,7 @@ export default function ImprovePage() {
 
       {/* Star rating */}
       <div className="mb-6">
-        <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+        <p className="text-sm font-semibold text-text-secondary mb-3">
           How good was this output?
         </p>
         <div className="flex gap-2">
@@ -115,15 +115,15 @@ export default function ImprovePage() {
               onMouseLeave={() => setHovered(0)}
               disabled={accepted}
               aria-label={`${star} star${star > 1 ? "s" : ""}`}
-              className={`text-3xl transition-transform hover:scale-110 disabled:cursor-default ${
-                star <= (hovered || rating) ? "text-yellow-400" : "text-gray-200 dark:text-gray-600"
+              className={`text-3xl transition-opacity disabled:cursor-default ${
+                star <= (hovered || rating) ? "text-yellow-400 opacity-100" : "text-text-tertiary opacity-50 hover:opacity-80"
               }`}
             >
               ★
             </button>
           ))}
           {rating > 0 && (
-            <span className="ml-2 self-center text-sm text-gray-500">
+            <span className="ml-2 self-center text-sm text-text-secondary">
               {["", "Poor", "Fair", "Good", "Great", "Excellent"][rating]}
             </span>
           )}
@@ -134,9 +134,9 @@ export default function ImprovePage() {
       <div className="mb-6">
         <label
           htmlFor="comment"
-          className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1"
+          className="block text-sm font-semibold text-text-secondary mb-1"
         >
-          What should be different? <span className="font-normal text-gray-400">(optional)</span>
+          What should be different? <span className="font-normal text-text-tertiary">(optional)</span>
         </label>
         <textarea
           id="comment"
@@ -145,7 +145,7 @@ export default function ImprovePage() {
           onChange={(e) => setComment(e.target.value)}
           disabled={accepted}
           placeholder="e.g. Too formal — use the customer's first name and be more empathetic"
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none disabled:opacity-50"
+          className="w-full rounded-lg border border-border-subtle bg-surface px-4 py-3 text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-structural resize-none disabled:opacity-50"
         />
       </div>
 
@@ -171,10 +171,10 @@ export default function ImprovePage() {
       {suggestion && !accepted && (
         <div className="mt-8 space-y-4">
           <div>
-            <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            <h2 className="text-sm font-semibold text-text-secondary mb-2">
               Suggested instruction change
             </h2>
-            <div className="rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">
+            <div className="rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20 px-4 py-4 text-sm text-text-primary whitespace-pre-wrap">
               {suggestion}
             </div>
           </div>
@@ -199,8 +199,8 @@ export default function ImprovePage() {
       {/* Accepted state */}
       {accepted && (
         <div className="mt-8 space-y-4">
-          <div className="rounded-lg border border-green-200 bg-green-50 dark:border-green-700 dark:bg-green-900/20 px-4 py-4 text-sm text-green-800 dark:text-green-300">
-            ✓ Agent instructions updated. Run another test to see the improvement.
+          <div className="rounded-md border border-border-subtle bg-canvas px-4 py-4 text-sm text-text-primary">
+            ✓ Agent updated. Run another test to see the improvement.
           </div>
           <button
             onClick={() => router.push("/build")}

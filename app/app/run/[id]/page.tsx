@@ -93,7 +93,7 @@ function RunPageInner() {
     <div className="flex flex-col h-full">
 
       {/* Top bar */}
-      <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+      <div className="flex items-center justify-between px-6 py-3 border-b border-border-subtle bg-surface">
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={() => router.push("/")}
@@ -102,7 +102,7 @@ function RunPageInner() {
             Agents
           </button>
           <span className="text-gray-300 dark:text-gray-600">|</span>
-          <span className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">{displayName}</span>
+          <span className="text-base font-semibold text-text-primary truncate">{displayName}</span>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           {result && (
@@ -124,14 +124,14 @@ function RunPageInner() {
       </div>
 
       {/* 3-column grid */}
-      <div className="flex flex-1 divide-x divide-gray-200 dark:divide-gray-700 overflow-auto">
+      <div className="flex flex-1 divide-x divide-border-subtle overflow-auto">
 
         {/* ── Column 1: Input ─────────────────────────────────────────── */}
         <div className="flex-1 min-w-0 px-6 py-6 space-y-4 overflow-y-auto">
           <div>
             <p className="text-sm font-semibold text-text-primary mb-1">Input</p>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Your input</h2>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <h2 className="text-lg font-bold text-text-primary">Your input</h2>
+            <p className="text-xs text-text-tertiary mt-0.5">
               Type or paste the case for this run. Or upload a file.
             </p>
           </div>
@@ -143,7 +143,7 @@ function RunPageInner() {
             placeholder={activeAgentDef.inputType
               ? `e.g. ${activeAgentDef.inputType}`
               : "Paste or type your input here…"}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full rounded-lg border border-border-subtle bg-surface px-4 py-3 text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-structural resize-none"
           />
 
           {/* File upload */}
@@ -174,17 +174,17 @@ function RunPageInner() {
         <div className="flex-1 min-w-0 px-6 py-6 space-y-4 overflow-y-auto">
           <div>
             <p className="text-sm font-semibold text-text-primary mb-1">Process</p>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Workflow</h2>
-            <p className="text-xs text-gray-400 mt-0.5">Policy and steps defined during build. Watch live progress.</p>
+            <h2 className="text-lg font-bold text-text-primary">Workflow</h2>
+            <p className="text-xs text-text-tertiary mt-0.5">Policy and steps defined during build. Watch live progress.</p>
           </div>
 
           {/* Policy badge */}
-          <div className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 px-3 py-2">
+          <div className="flex items-center gap-2 rounded-lg border border-border-subtle bg-canvas px-3 py-2">
             <span className="text-sm">📋</span>
-            <span className="text-xs text-gray-600 dark:text-gray-300 font-medium truncate">
+            <span className="text-xs text-text-secondary font-medium truncate">
               {activeDoc ? activeDoc.name : activeAgentDef.policyDocId === "escalation_guide" ? "Escalation Guide" : "Service Policy"}
             </span>
-            <span className="ml-auto text-xs text-gray-400 shrink-0">grounding</span>
+            <span className="ml-auto text-xs text-text-tertiary shrink-0">grounding</span>
           </div>
 
           {/* Live steps */}
@@ -203,9 +203,9 @@ function RunPageInner() {
                       {isDone ? "✓" : i + 1}
                     </span>
                     <span className={`text-sm pt-0.5 transition-colors ${
-                      isDone   ? "text-gray-400 line-through" :
-                      isActive ? "text-gray-900 dark:text-gray-100 font-medium" :
-                                 "text-gray-500 dark:text-gray-400"
+                      isDone   ? "text-text-tertiary line-through" :
+                      isActive ? "text-text-primary font-medium" :
+                                 "text-text-secondary"
                     }`}>
                       {step}
                     </span>
@@ -214,7 +214,7 @@ function RunPageInner() {
               })}
             </ol>
           ) : (
-            <div className="rounded-lg border border-dashed border-gray-200 dark:border-gray-700 px-4 py-6 text-center text-xs text-gray-400">
+            <div className="rounded-lg border border-dashed border-border-subtle px-4 py-6 text-center text-xs text-text-tertiary">
               No steps defined.{" "}
               <button onClick={() => router.push("/build")} className="underline">Edit agent</button>{" "}
               to add them.
@@ -223,9 +223,9 @@ function RunPageInner() {
 
           {/* Instructions summary */}
           {activeAgentDef.agentInstructions && (
-            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 px-3 py-2">
-              <p className="text-xs font-semibold text-gray-400 mb-1">Instructions</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-4">{activeAgentDef.agentInstructions}</p>
+            <div className="rounded-lg border border-border-subtle bg-canvas px-3 py-2">
+              <p className="text-xs font-semibold text-text-tertiary mb-1">Instructions</p>
+              <p className="text-xs text-text-secondary line-clamp-4">{activeAgentDef.agentInstructions}</p>
             </div>
           )}
         </div>
@@ -234,35 +234,35 @@ function RunPageInner() {
         <div className="flex-1 min-w-0 px-6 py-6 space-y-4 overflow-y-auto">
           <div>
             <p className="text-sm font-semibold text-text-primary mb-1">Output</p>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Agent output</h2>
-            <p className="text-xs text-gray-400 mt-0.5">Generated from your input against company policy.</p>
+            <h2 className="text-lg font-bold text-text-primary">Agent output</h2>
+            <p className="text-xs text-text-tertiary mt-0.5">Generated from your input against company policy.</p>
           </div>
 
           {loading && !result && (
             <div className="space-y-3">
-              {[1, 2, 3].map((n) => <div key={n} className="h-16 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse" />)}
+              {[1, 2, 3].map((n) => <div key={n} className="h-16 rounded-lg bg-canvas animate-pulse" />)}
             </div>
           )}
 
           {!loading && !result && (
-            <div className="rounded-lg border border-dashed border-gray-300 dark:border-gray-600 px-4 py-16 text-center text-sm text-gray-400">
-              Output will appear here after you click <strong className="text-gray-600 dark:text-gray-300">▶ Run</strong>.
+            <div className="rounded-lg border border-dashed border-gray-300 dark:border-gray-600 px-4 py-16 text-center text-sm text-text-tertiary">
+              Output will appear here after you click <strong className="text-text-secondary">▶ Run</strong>.
             </div>
           )}
 
           {result && (
             <div className="space-y-4">
               <div>
-                <p className="text-xs font-semibold text-gray-500 mb-1.5">
+                <p className="text-xs font-semibold text-text-secondary mb-1.5">
                   {activeAgentDef.outputType.includes("email") ? "Email draft" : "Response"}
                 </p>
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">
+                <div className="rounded-lg border border-border-subtle bg-white dark:bg-gray-800 px-4 py-4 text-sm text-text-primary whitespace-pre-wrap">
                   {result.email_draft}
                 </div>
               </div>
               <div>
-                <p className="text-xs font-semibold text-gray-500 mb-1.5">Action note</p>
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">
+                <p className="text-xs font-semibold text-text-secondary mb-1.5">Action note</p>
+                <div className="rounded-lg border border-border-subtle bg-white dark:bg-gray-800 px-4 py-4 text-sm text-text-primary whitespace-pre-wrap">
                   {result.action_note}
                 </div>
               </div>
@@ -277,7 +277,7 @@ function RunPageInner() {
 
 export default function RunPage() {
   return (
-    <Suspense fallback={<div className="flex flex-1 items-center justify-center text-sm text-gray-400">Loading…</div>}>
+    <Suspense fallback={<div className="flex flex-1 items-center justify-center text-sm text-text-tertiary">Loading…</div>}>
       <RunPageInner />
     </Suspense>
   );
