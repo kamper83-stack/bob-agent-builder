@@ -117,9 +117,7 @@ export default function TestPage() {
         {/* ── Column 1: Input ─────────────────────────────────────────── */}
         <div className="flex-1 min-w-0 px-6 py-6 space-y-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-1">
-              1 · Input
-            </p>
+            <p className="text-sm font-semibold text-text-primary mb-1">Input</p>
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
               Your input for this run
             </h2>
@@ -149,9 +147,7 @@ export default function TestPage() {
         {/* ── Column 2: Processing ────────────────────────────────────── */}
         <div className="flex-1 min-w-0 px-6 py-6 space-y-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-1">
-              2 · Processing
-            </p>
+            <p className="text-sm font-semibold text-text-primary mb-1">Processing</p>
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
               What the agent is doing
             </h2>
@@ -226,9 +222,7 @@ export default function TestPage() {
         {/* ── Column 3: Output ────────────────────────────────────────── */}
         <div className="flex-1 min-w-0 px-6 py-6 space-y-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-1">
-              3 · Output
-            </p>
+            <p className="text-sm font-semibold text-text-primary mb-1">Output</p>
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
               Agent output
             </h2>

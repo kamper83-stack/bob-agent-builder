@@ -129,7 +129,7 @@ function RunPageInner() {
         {/* ── Column 1: Input ─────────────────────────────────────────── */}
         <div className="flex-1 min-w-0 px-6 py-6 space-y-4 overflow-y-auto">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-1">1 · Input</p>
+            <p className="text-sm font-semibold text-text-primary mb-1">Input</p>
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Your input</h2>
             <p className="text-xs text-gray-400 mt-0.5">
               Type or paste the case for this run. Or upload a file.
@@ -173,7 +173,7 @@ function RunPageInner() {
         {/* ── Column 2: Process ───────────────────────────────────────── */}
         <div className="flex-1 min-w-0 px-6 py-6 space-y-4 overflow-y-auto">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-1">2 · Process</p>
+            <p className="text-sm font-semibold text-text-primary mb-1">Process</p>
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Workflow</h2>
             <p className="text-xs text-gray-400 mt-0.5">Policy and steps defined during build. Watch live progress.</p>
           </div>
@@ -233,7 +233,7 @@ function RunPageInner() {
         {/* ── Column 3: Output ────────────────────────────────────────── */}
         <div className="flex-1 min-w-0 px-6 py-6 space-y-4 overflow-y-auto">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-1">3 · Output</p>
+            <p className="text-sm font-semibold text-text-primary mb-1">Output</p>
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Agent output</h2>
             <p className="text-xs text-gray-400 mt-0.5">Generated from your input against company policy.</p>
           </div>

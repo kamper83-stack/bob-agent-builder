@@ -92,7 +92,7 @@ export default function ImprovePage() {
       {/* Last run summary */}
       {hasRun && (
         <div className="mb-8 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">
+          <p className="text-sm font-semibold text-text-secondary mb-2">
             Last run output
           </p>
           <p className="text-sm text-gray-700 dark:text-gray-200 line-clamp-3 whitespace-pre-wrap">
