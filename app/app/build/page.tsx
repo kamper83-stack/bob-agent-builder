@@ -315,13 +315,13 @@ export default function BuildPage() {
     <div className="relative flex flex-col h-full">
 
       {/* Top bar */}
-      <div className="flex items-center gap-3 px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+      <div className="flex items-center gap-3 px-6 py-3 border-b border-border-subtle bg-surface">
         <input
           type="text"
           value={agentName}
           onChange={(e) => setAgentName(e.target.value)}
           placeholder="Agent name…"
-          className="flex-1 min-w-0 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 min-w-0 rounded-lg border border-border-subtle bg-surface px-3 py-1.5 text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-structural"
         />
         <button
           onClick={handleSave}
@@ -346,17 +346,17 @@ export default function BuildPage() {
       {/* Clarification modal */}
       {clarification && (
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/30">
-          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg max-w-md w-full mx-6 p-6 space-y-4">
-            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+          <div className="bg-surface rounded-xl border border-border-subtle shadow-lg max-w-md w-full mx-6 p-6 space-y-4">
+            <p className="text-sm font-semibold text-text-primary">
               One quick question before I run
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-300">{clarification}</p>
+            <p className="text-sm text-text-secondary">{clarification}</p>
             <textarea
               rows={3}
               value={clarificationAnswer}
               onChange={(e) => setClarificationAnswer(e.target.value)}
               placeholder="Type your answer…"
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full rounded-lg border border-border-subtle bg-surface px-3 py-2 text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-structural resize-none"
             />
             <div className="flex gap-3">
               <button
@@ -377,14 +377,14 @@ export default function BuildPage() {
       )}
 
       {/* 3-column grid */}
-      <div className="flex flex-1 divide-x divide-gray-200 dark:divide-gray-700 overflow-auto">
+      <div className="flex flex-1 divide-x divide-border-subtle overflow-auto">
 
         {/* ── Column 1: Input ─────────────────────────────────────────── */}
         <div className="flex-1 min-w-0 px-6 py-6 space-y-6 overflow-y-auto">
           <div>
             <p className="text-sm font-semibold text-text-primary mb-1">Input</p>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Test input</h2>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <h2 className="text-lg font-bold text-text-primary">Test input</h2>
+            <p className="text-xs text-text-tertiary mt-0.5">
               Paste a real example to test the agent during building.
             </p>
           </div>
@@ -394,41 +394,41 @@ export default function BuildPage() {
             value={testInput}
             onChange={(e) => setTestInput(e.target.value)}
             placeholder={inputDesc ? `e.g. ${inputDesc}` : "Paste a real test input here…"}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full rounded-lg border border-border-subtle bg-surface px-4 py-3 text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-structural resize-none"
           />
 
           {/* Input description */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 mb-1">What does the agent receive?</p>
+            <p className="text-xs font-semibold text-text-secondary mb-1">What does the agent receive?</p>
             <textarea
               rows={2}
               value={inputDesc}
               onChange={(e) => setInputDesc(e.target.value)}
               placeholder="e.g. A customer complaint email with name and issue"
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full rounded-lg border border-border-subtle bg-surface px-3 py-2 text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-structural resize-none"
             />
           </div>
 
           {/* Examples — input only */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 mb-2">
+            <p className="text-xs font-semibold text-text-secondary mb-2">
               Few-shot examples{" "}
-              <span className="font-normal text-gray-400">— sample inputs the agent should handle</span>
+              <span className="font-normal text-text-tertiary">— sample inputs the agent should handle</span>
             </p>
             <div className="space-y-3">
               {localExamples.map((ex, i) => (
-                <div key={i} className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
-                  <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60">
-                    <span className="text-xs font-semibold text-gray-500">Example {i + 1}</span>
+                <div key={i} className="rounded-lg border border-border-subtle bg-white dark:bg-gray-800 overflow-hidden">
+                  <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100 dark:border-gray-700 bg-canvas/60">
+                    <span className="text-xs font-semibold text-text-secondary">Example {i + 1}</span>
                     {localExamples.length > 1 && (
                       <button onClick={() => removeExample(i)} className="text-gray-300 hover:text-red-400 transition-colors text-base leading-none" aria-label="Remove example">×</button>
                     )}
                   </div>
                   <div className="px-3 py-2">
-                    <p className="text-xs font-medium text-gray-400 mb-1">Sample input</p>
+                    <p className="text-xs font-medium text-text-tertiary mb-1">Sample input</p>
                     <textarea rows={2} value={ex.input} onChange={(e) => updateExample(i, "input", e.target.value)}
                       placeholder="Paste a real user message, email, ticket, or file excerpt…"
-                      className="w-full bg-transparent text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none resize-none" />
+                      className="w-full bg-transparent text-sm text-text-primary placeholder-text-tertiary focus:outline-none resize-none" />
                   </div>
                 </div>
               ))}
@@ -438,13 +438,13 @@ export default function BuildPage() {
 
           {/* Connectors */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 mb-2">Connectors</p>
+            <p className="text-xs font-semibold text-text-secondary mb-2">Connectors</p>
             <div className="space-y-2">
               {CONNECTORS.map((c) => (
-                <div key={c.id} className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3">
+                <div key={c.id} className="flex items-center justify-between rounded-lg border border-border-subtle px-4 py-3">
                   <div>
-                    <p className="text-sm font-medium text-gray-800 dark:text-gray-100">{c.label}</p>
-                    <p className="text-xs text-gray-400">{c.detail}</p>
+                    <p className="text-sm font-medium text-text-primary">{c.label}</p>
+                    <p className="text-xs text-text-tertiary">{c.detail}</p>
                   </div>
                   <div className="relative inline-flex h-5 w-9 items-center rounded-full bg-blue-600">
                     <span className="inline-block h-3.5 w-3.5 translate-x-4 rounded-full bg-white" />
@@ -460,8 +460,8 @@ export default function BuildPage() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-semibold text-text-primary mb-1">Process</p>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Policy & steps</h2>
-              <p className="text-xs text-gray-400 mt-0.5">Business logic and processing order.</p>
+              <h2 className="text-lg font-bold text-text-primary">Policy & steps</h2>
+              <p className="text-xs text-text-tertiary mt-0.5">Business logic and processing order.</p>
             </div>
             <button
               onClick={generateSteps}
@@ -474,13 +474,13 @@ export default function BuildPage() {
 
           {/* Policy doc */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 mb-2">Company document</p>
+            <p className="text-xs font-semibold text-text-secondary mb-2">Company document</p>
             <div className="space-y-2">
               {POLICY_OPTIONS.map((opt) => (
-                <label key={opt.id} className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                <label key={opt.id} className="flex items-center gap-3 rounded-lg border border-border-subtle px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
                   <input type="radio" name="policy" value={opt.id} checked={policyDocId === opt.id} onChange={() => setPolicyDocId(opt.id)} className="accent-blue-600" />
-                  <span className="text-sm text-gray-800 dark:text-gray-100">{opt.label}</span>
-                  <span className="ml-auto text-xs text-gray-400">PDF</span>
+                  <span className="text-sm text-text-primary">{opt.label}</span>
+                  <span className="ml-auto text-xs text-text-tertiary">PDF</span>
                 </label>
               ))}
               <input ref={fileInputRef} type="file" accept=".pdf,.docx,.txt" className="hidden" onChange={handlePolicyFileChange} />
@@ -508,7 +508,7 @@ export default function BuildPage() {
               <li key={i} className="flex items-center gap-2">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-text-primary text-xs font-bold text-surface">{i + 1}</span>
                 <input type="text" value={step} onChange={(e) => updateStep(i, e.target.value)} placeholder={`Step ${i + 1}`}
-                  className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="flex-1 rounded-lg border border-border-subtle bg-surface px-3 py-2 text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-structural" />
                 {steps.length > 1 && <button onClick={() => removeStep(i)} className="text-text-tertiary hover:text-red-600 transition-colors text-sm leading-none" aria-label="Remove step">×</button>}
               </li>
             ))}
@@ -519,7 +519,7 @@ export default function BuildPage() {
 
           {/* Tone */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 mb-2">Writing style</p>
+            <p className="text-xs font-semibold text-text-secondary mb-2">Writing style</p>
             <div className="flex gap-2">
               {TONE_OPTIONS.map((t) => (
                 <button key={t.id} onClick={() => setTone(t.id)}
@@ -531,14 +531,14 @@ export default function BuildPage() {
           </div>
 
           {/* Spacer + Rate & Improve */}
-          <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-800">
+          <div className="mt-auto pt-4 border-t border-border-subtle">
             {testResult ? (
               <button onClick={handleImprove}
                 className="w-full rounded-md border border-accent px-6 py-2.5 text-sm font-semibold text-accent hover:opacity-80 transition-opacity">
                 Rate &amp; Improve
               </button>
             ) : (
-              <p className="text-xs text-gray-400 text-center">Run a test to rate and improve the agent.</p>
+              <p className="text-xs text-text-tertiary text-center">Run a test to rate and improve the agent.</p>
             )}
           </div>
         </div>
@@ -547,13 +547,13 @@ export default function BuildPage() {
         <div className="flex-1 min-w-0 px-6 py-6 flex flex-col gap-6 overflow-y-auto">
           <div>
             <p className="text-sm font-semibold text-text-primary mb-1">Output</p>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Ideal output & test result</h2>
-            <p className="text-xs text-gray-400 mt-0.5">Define what the agent should produce, then see the test result here.</p>
+            <h2 className="text-lg font-bold text-text-primary">Ideal output & test result</h2>
+            <p className="text-xs text-text-tertiary mt-0.5">Define what the agent should produce, then see the test result here.</p>
           </div>
 
           {/* Output type chips */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 mb-2">Output type</p>
+            <p className="text-xs font-semibold text-text-secondary mb-2">Output type</p>
             <div className="flex flex-wrap gap-2">
               {OUTPUT_CHIPS.map((chip) => (
                 <button key={chip.id} onClick={() => toggleOutput(chip.id)}
@@ -566,22 +566,22 @@ export default function BuildPage() {
 
           {/* Ideal outputs per example */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 mb-2">
+            <p className="text-xs font-semibold text-text-secondary mb-2">
               Ideal outputs{" "}
-              <span className="font-normal text-gray-400">— one per example, leave blank to follow company policy</span>
+              <span className="font-normal text-text-tertiary">— one per example, leave blank to follow company policy</span>
             </p>
             <div className="space-y-3">
               {localExamples.map((ex, i) => (
-                <div key={i} className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
-                  <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60">
-                    <span className="text-xs font-semibold text-gray-500">Example {i + 1}</span>
+                <div key={i} className="rounded-lg border border-border-subtle bg-white dark:bg-gray-800 overflow-hidden">
+                  <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700 bg-canvas/60">
+                    <span className="text-xs font-semibold text-text-secondary">Example {i + 1}</span>
                   </div>
                   <div className="px-3 py-2">
-                    <p className="text-xs font-medium text-gray-400 mb-1">Ideal output <span className="font-normal">(optional)</span></p>
+                    <p className="text-xs font-medium text-text-tertiary mb-1">Ideal output <span className="font-normal">(optional)</span></p>
                     <textarea rows={2} value={ex.output} onChange={(e) => updateExample(i, "output", e.target.value)} onBlur={() => checkOutputConflict(i)}
                       placeholder="Leave blank to follow company policy"
-                      className="w-full bg-transparent text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none resize-none" />
-                    {conflicts[i] === "checking" && <p className="text-xs text-gray-400 mt-1">Checking against policy…</p>}
+                      className="w-full bg-transparent text-sm text-text-primary placeholder-text-tertiary focus:outline-none resize-none" />
+                    {conflicts[i] === "checking" && <p className="text-xs text-text-tertiary mt-1">Checking against policy…</p>}
                     {conflicts[i] && conflicts[i] !== "checking" && (conflicts[i] as { conflict: boolean }).conflict && (
                       <div className={`mt-2 rounded-lg border px-3 py-2 text-xs ${approved[i] ? "border-green-200 bg-green-50 dark:border-green-700 dark:bg-green-900/20 text-green-700" : "border-amber-200 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/20 text-amber-800"}`}>
                         {approved[i] ? <span>⚠ Using despite policy conflict.</span> : (
@@ -604,8 +604,8 @@ export default function BuildPage() {
 
           {/* Upload example output */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 mb-2">
-              Reference output file <span className="font-normal text-gray-400">— upload a real doc as style reference</span>
+            <p className="text-xs font-semibold text-text-secondary mb-2">
+              Reference output file <span className="font-normal text-text-tertiary">— upload a real doc as style reference</span>
             </p>
             <input type="file" accept=".pdf,.docx,.txt" className="hidden" id="output-file-upload"
               onChange={(e) => {
@@ -623,50 +623,50 @@ export default function BuildPage() {
               }}
             />
             <label htmlFor="output-file-upload"
-              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm text-gray-400 hover:text-gray-600 hover:border-gray-400 transition-colors">
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm text-text-tertiary hover:text-gray-600 hover:border-gray-400 transition-colors">
               + Upload output file
             </label>
             {localExamples[0]?.output && (
-              <p className="mt-1.5 text-xs text-gray-400 truncate">✓ Loaded into Example 1 ({localExamples[0].output.length} chars)</p>
+              <p className="mt-1.5 text-xs text-text-tertiary truncate">✓ Loaded into Example 1 ({localExamples[0].output.length} chars)</p>
             )}
           </div>
 
           {/* Test result */}
           {testRunning && !testResult && (
             <div className="space-y-3">
-              {[1, 2, 3].map((n) => <div key={n} className="h-16 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse" />)}
+              {[1, 2, 3].map((n) => <div key={n} className="h-16 rounded-lg bg-canvas animate-pulse" />)}
             </div>
           )}
           {testError && (
             <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-700 dark:bg-red-900/20 dark:text-red-300">{testError}</div>
           )}
           {!testRunning && !testResult && !testError && (
-            <div className="rounded-lg border border-dashed border-gray-300 dark:border-gray-600 px-4 py-10 text-center text-sm text-gray-400">
-              Test result will appear here after running <strong className="text-gray-600 dark:text-gray-300">▶ Run test</strong>.
+            <div className="rounded-lg border border-dashed border-gray-300 dark:border-gray-600 px-4 py-10 text-center text-sm text-text-tertiary">
+              Test result will appear here after running <strong className="text-text-secondary">▶ Run test</strong>.
             </div>
           )}
           {testResult && (
             <div className="space-y-4">
               <div>
-                <p className="text-xs font-semibold text-gray-500 mb-1.5">{selectedOutputs.includes("email") ? "Email draft" : "Response"}</p>
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">{testResult.email_draft}</div>
+                <p className="text-xs font-semibold text-text-secondary mb-1.5">{selectedOutputs.includes("email") ? "Email draft" : "Response"}</p>
+                <div className="rounded-lg border border-border-subtle bg-white dark:bg-gray-800 px-4 py-4 text-sm text-text-primary whitespace-pre-wrap">{testResult.email_draft}</div>
               </div>
               <div>
-                <p className="text-xs font-semibold text-gray-500 mb-1.5">Action note</p>
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">{testResult.action_note}</div>
+                <p className="text-xs font-semibold text-text-secondary mb-1.5">Action note</p>
+                <div className="rounded-lg border border-border-subtle bg-white dark:bg-gray-800 px-4 py-4 text-sm text-text-primary whitespace-pre-wrap">{testResult.action_note}</div>
               </div>
             </div>
           )}
 
           {/* Spacer + Rate & Improve */}
-          <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-800">
+          <div className="mt-auto pt-4 border-t border-border-subtle">
             {testResult ? (
               <button onClick={handleImprove}
                 className="w-full rounded-md border border-accent px-6 py-2.5 text-sm font-semibold text-accent hover:opacity-80 transition-opacity">
                 Rate &amp; Improve
               </button>
             ) : (
-              <p className="text-xs text-gray-400 text-center">Run a test to rate and improve the agent.</p>
+              <p className="text-xs text-text-tertiary text-center">Run a test to rate and improve the agent.</p>
             )}
           </div>
         </div>

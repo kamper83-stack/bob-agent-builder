@@ -62,10 +62,10 @@ export default function ProcessPage() {
     <div className="mx-auto max-w-lg px-6 py-12">
       {/* Heading */}
       <div className="mb-10">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-text-primary">
           Here's what the agent will do
         </h1>
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-text-secondary">
           Review the steps. Edit any step in plain language, then approve.
         </p>
       </div>
@@ -90,10 +90,10 @@ export default function ProcessPage() {
           {[1, 2, 3].map((n) => (
             <div
               key={n}
-              className="h-12 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse"
+              className="h-12 rounded-lg bg-canvas animate-pulse"
             />
           ))}
-          <p className="text-xs text-gray-400 text-center pt-1">
+          <p className="text-xs text-text-tertiary text-center pt-1">
             Figuring out the steps…
           </p>
         </div>
@@ -124,7 +124,7 @@ export default function ProcessPage() {
                 type="text"
                 value={step}
                 onChange={(e) => handleStepChange(i, e.target.value)}
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-border-subtle bg-surface px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-structural"
               />
             </li>
           ))}

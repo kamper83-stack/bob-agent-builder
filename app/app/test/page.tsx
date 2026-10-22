@@ -77,8 +77,8 @@ export default function TestPage() {
     <div className="flex flex-col h-full">
 
       {/* Top bar */}
-      <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-        <h1 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+      <div className="flex items-center justify-between px-6 py-3 border-b border-border-subtle bg-surface">
+        <h1 className="text-base font-semibold text-text-primary">
           Run agent
         </h1>
         <div className="flex items-center gap-3">
@@ -112,16 +112,16 @@ export default function TestPage() {
       )}
 
       {/* 3-column grid */}
-      <div className="flex flex-1 divide-x divide-gray-200 dark:divide-gray-700 overflow-auto">
+      <div className="flex flex-1 divide-x divide-border-subtle overflow-auto">
 
         {/* ── Column 1: Input ─────────────────────────────────────────── */}
         <div className="flex-1 min-w-0 px-6 py-6 space-y-4">
           <div>
             <p className="text-sm font-semibold text-text-primary mb-1">Input</p>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+            <h2 className="text-lg font-bold text-text-primary">
               Your input for this run
             </h2>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-text-tertiary mt-0.5">
               Paste or type the real case you want the agent to handle.
             </p>
           </div>
@@ -133,7 +133,7 @@ export default function TestPage() {
             placeholder={agentDef.inputType
               ? `e.g. ${agentDef.inputType}`
               : "Paste the input for this run…"}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full rounded-lg border border-border-subtle bg-surface px-4 py-3 text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-structural resize-none"
           />
 
           {/* Error */}
@@ -148,21 +148,21 @@ export default function TestPage() {
         <div className="flex-1 min-w-0 px-6 py-6 space-y-4">
           <div>
             <p className="text-sm font-semibold text-text-primary mb-1">Processing</p>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+            <h2 className="text-lg font-bold text-text-primary">
               What the agent is doing
             </h2>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-text-tertiary mt-0.5">
               Steps run against company policy. Watch live as each completes.
             </p>
           </div>
 
           {/* Policy / doc indicator */}
-          <div className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 px-3 py-2">
+          <div className="flex items-center gap-2 rounded-lg border border-border-subtle bg-canvas px-3 py-2">
             <span className="text-sm">📋</span>
-            <span className="text-xs text-gray-600 dark:text-gray-300 font-medium truncate">
+            <span className="text-xs text-text-secondary font-medium truncate">
               {uploadedDoc ? uploadedDoc.name : agentDef.policyDocId === "escalation_guide" ? "Escalation Guide" : "Service Policy"}
             </span>
-            <span className="ml-auto text-xs text-gray-400 shrink-0">grounding</span>
+            <span className="ml-auto text-xs text-text-tertiary shrink-0">grounding</span>
           </div>
 
           {/* Step list */}
@@ -185,12 +185,12 @@ export default function TestPage() {
                     </span>
                     <span className={`text-sm pt-0.5 transition-colors ${
                       isDone
-                        ? "text-gray-500 dark:text-gray-400 line-through"
+                        ? "text-text-secondary line-through"
                         : isActive
-                        ? "text-gray-900 dark:text-gray-100 font-medium"
+                        ? "text-text-primary font-medium"
                         : isPending
-                        ? "text-gray-400 dark:text-gray-500"
-                        : "text-gray-600 dark:text-gray-300"
+                        ? "text-text-tertiary"
+                        : "text-text-secondary"
                     }`}>
                       {step}
                     </span>
@@ -199,7 +199,7 @@ export default function TestPage() {
               })}
             </ol>
           ) : (
-            <div className="rounded-lg border border-dashed border-gray-200 dark:border-gray-700 px-4 py-6 text-center text-xs text-gray-400">
+            <div className="rounded-lg border border-dashed border-border-subtle px-4 py-6 text-center text-xs text-text-tertiary">
               No steps defined yet.{" "}
               <button onClick={() => router.push("/define")} className="underline">
                 Go to Build
@@ -210,9 +210,9 @@ export default function TestPage() {
 
           {/* Tone / instructions summary */}
           {agentDef.agentInstructions && (
-            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 px-3 py-2">
-              <p className="text-xs font-semibold text-gray-400 mb-1">Agent instructions</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-3">
+            <div className="rounded-lg border border-border-subtle bg-canvas px-3 py-2">
+              <p className="text-xs font-semibold text-text-tertiary mb-1">Agent instructions</p>
+              <p className="text-xs text-text-secondary line-clamp-3">
                 {agentDef.agentInstructions}
               </p>
             </div>
@@ -223,10 +223,10 @@ export default function TestPage() {
         <div className="flex-1 min-w-0 px-6 py-6 space-y-4">
           <div>
             <p className="text-sm font-semibold text-text-primary mb-1">Output</p>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+            <h2 className="text-lg font-bold text-text-primary">
               Agent output
             </h2>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-text-tertiary mt-0.5">
               Generated from your input against company policy.
             </p>
           </div>
@@ -235,14 +235,14 @@ export default function TestPage() {
           {loading && !result && (
             <div className="space-y-3">
               {[1, 2, 3].map((n) => (
-                <div key={n} className={`h-${n === 1 ? "24" : "16"} rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse`} />
+                <div key={n} className={`h-${n === 1 ? "24" : "16"} rounded-lg bg-canvas animate-pulse`} />
               ))}
             </div>
           )}
 
           {/* Empty state */}
           {!loading && !result && (
-            <div className="rounded-lg border border-dashed border-gray-300 dark:border-gray-600 px-4 py-12 text-center text-sm text-gray-400">
+            <div className="rounded-lg border border-dashed border-gray-300 dark:border-gray-600 px-4 py-12 text-center text-sm text-text-tertiary">
               Output will appear here after you click Run.
             </div>
           )}
@@ -251,17 +251,17 @@ export default function TestPage() {
           {result && (
             <div className="space-y-4">
               <div>
-                <p className="text-xs font-semibold text-gray-500 mb-1.5">
+                <p className="text-xs font-semibold text-text-secondary mb-1.5">
                   {agentDef.outputType.includes("email") ? "Email draft" : "Response"}
                 </p>
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">
+                <div className="rounded-lg border border-border-subtle bg-white dark:bg-gray-800 px-4 py-4 text-sm text-text-primary whitespace-pre-wrap">
                   {result.email_draft}
                 </div>
               </div>
 
               <div>
-                <p className="text-xs font-semibold text-gray-500 mb-1.5">Action note</p>
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">
+                <p className="text-xs font-semibold text-text-secondary mb-1.5">Action note</p>
+                <div className="rounded-lg border border-border-subtle bg-white dark:bg-gray-800 px-4 py-4 text-sm text-text-primary whitespace-pre-wrap">
                   {result.action_note}
                 </div>
               </div>
