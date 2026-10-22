@@ -7,8 +7,7 @@ Run this checklist before merging to `main`. All items must pass.
 ```bash
 # 1. Start the backend (from repo root)
 pip install -r src/requirements.txt
-cp src/.env.example src/.env       # then fill in WATSONX_APIKEY and WATSONX_PROJECT_ID
-uvicorn src.api:app --reload
+uvicorn src.api:app --reload  # or: python -m src.api
 
 # 2. Start the frontend (in a second terminal)
 cd app
