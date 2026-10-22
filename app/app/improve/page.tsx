@@ -154,9 +154,9 @@ export default function ImprovePage() {
         <button
           onClick={handleGetSuggestion}
           disabled={!canSubmit || !hasRun}
-          className="w-full rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full rounded-md bg-text-primary px-6 py-3 text-sm font-semibold text-surface transition-opacity hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {loading ? "Getting suggestion…" : "Get improvement suggestion →"}
+          {loading ? "Getting suggestion…" : "Get improvement suggestion"}
         </button>
       )}
 
@@ -182,13 +182,13 @@ export default function ImprovePage() {
           <div className="flex gap-3">
             <button
               onClick={handleAccept}
-              className="flex-1 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+              className="flex-1 rounded-md bg-text-primary px-6 py-3 text-sm font-semibold text-surface transition-opacity hover:opacity-80"
             >
-              Accept &amp; update agent →
+              Accept &amp; update agent
             </button>
             <button
               onClick={() => setSuggestion(null)}
-              className="rounded-full border border-gray-300 dark:border-gray-600 px-6 py-3 text-sm font-semibold text-gray-600 dark:text-gray-300 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="rounded-md border border-border-strong px-6 py-3 text-sm font-semibold text-text-secondary transition-colors hover:bg-canvas"
             >
               Reject
             </button>
@@ -204,9 +204,9 @@ export default function ImprovePage() {
           </div>
           <button
             onClick={() => router.push("/build")}
-            className="w-full rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+            className="w-full rounded-md bg-text-primary px-6 py-3 text-sm font-semibold text-surface transition-opacity hover:opacity-80"
           >
-            Run agent again →
+            Run agent again
           </button>
         </div>
       )}
