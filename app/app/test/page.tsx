@@ -6,12 +6,16 @@ import { useAgent } from "../context/AgentContext";
 
 export default function TestPage() {
   const router = useRouter();
-  const { agentDef, setRunResult } = useAgent();
+  // runResult is the single source of truth — no local result state (H2)
+  const { agentDef, runResult, setRunResult } = useAgent();
 
-  const [complaintText, setComplaintText] = useState("");
+  // Pre-populate the textarea with the last complaint so navigating back
+  // doesn't leave a blank box when a result is already showing.
+  const [complaintText, setComplaintText] = useState(
+    runResult?.complaint_text ?? ""
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<{ email_draft: string; action_note: string } | null>(null);
 
   const isReady = agentDef.agentInstructions.trim().length > 0;
   const canRun = complaintText.trim().length > 0 && !loading;
@@ -19,7 +23,7 @@ export default function TestPage() {
   async function handleRun() {
     setLoading(true);
     setError(null);
-    setResult(null);
+    setRunResult(null);
 
     try {
       const res = await fetch(
@@ -41,7 +45,6 @@ export default function TestPage() {
       }
 
       const data = await res.json();
-      setResult(data);
       setRunResult({ ...data, complaint_text: complaintText });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
@@ -110,15 +113,15 @@ export default function TestPage() {
         </div>
       )}
 
-      {/* Output */}
-      {result && (
+      {/* Output — reads from shared context so navigating away and back preserves the result */}
+      {runResult && (
         <div className="mt-8 space-y-6">
           <div>
             <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               Response email draft
             </h2>
             <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">
-              {result.email_draft}
+              {runResult.email_draft}
             </div>
           </div>
 
@@ -127,7 +130,7 @@ export default function TestPage() {
               Internal action note
             </h2>
             <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">
-              {result.action_note}
+              {runResult.action_note}
             </div>
           </div>
 
