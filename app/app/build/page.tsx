@@ -326,10 +326,10 @@ export default function BuildPage() {
         <button
           onClick={handleSave}
           disabled={!agentDef.agentInstructions && filledSteps.length === 0}
-          className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
+          className={`rounded-md px-4 py-1.5 text-sm font-semibold transition-opacity ${
             saved
               ? "bg-green-600 text-white cursor-default"
-              : "border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40"
+              : "border border-border-strong text-text-secondary hover:bg-canvas disabled:opacity-40"
           }`}
         >
           {saved ? "✓ Saved" : "Save agent"}
@@ -337,9 +337,9 @@ export default function BuildPage() {
         <button
           onClick={handleTest}
           disabled={!canTest || hasBlockingConflict || checkingConfidence}
-          className="rounded-full bg-gray-900 dark:bg-gray-100 px-5 py-1.5 text-sm font-semibold text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="rounded-md bg-text-primary px-5 py-1.5 text-sm font-semibold text-surface hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
         >
-          {testRunning ? "Running…" : checkingConfidence ? "Checking…" : "▶ Run test"}
+          {testRunning ? "Running…" : checkingConfidence ? "Checking…" : "Run test"}
         </button>
       </div>
 
@@ -361,13 +361,13 @@ export default function BuildPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => doTest(clarificationAnswer.trim() ? `\n\nUser clarification: ${clarificationAnswer.trim()}` : "")}
-                className="flex-1 rounded-full bg-gray-900 dark:bg-gray-100 px-4 py-2 text-sm font-semibold text-white dark:text-gray-900 hover:bg-gray-700 transition-colors"
+                className="flex-1 rounded-md bg-text-primary px-4 py-2 text-sm font-semibold text-surface hover:opacity-80 transition-opacity"
               >
-                Continue →
+                Continue
               </button>
               <button
                 onClick={() => { setClarification(null); setClarificationAnswer(""); }}
-                className="rounded-full border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="rounded-md border border-border-strong px-4 py-2 text-sm font-medium text-text-secondary hover:bg-canvas transition-colors"
               >
                 Cancel
               </button>
@@ -432,7 +432,7 @@ export default function BuildPage() {
                   </div>
                 </div>
               ))}
-              <button onClick={addExample} className="w-full rounded-lg border border-dashed border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm text-gray-400 hover:text-gray-600 hover:border-gray-400 transition-colors text-center">+ Add example</button>
+              <button onClick={addExample} className="w-full rounded-md border border-dashed border-border-strong px-4 py-2.5 text-sm text-text-tertiary hover:text-text-secondary hover:border-border-strong transition-colors text-center">Add example</button>
             </div>
           </div>
 
@@ -466,9 +466,9 @@ export default function BuildPage() {
             <button
               onClick={generateSteps}
               disabled={generatingSteps || !inputDesc.trim() || selectedOutputs.length === 0}
-              className="shrink-0 rounded-full border border-blue-600 px-3 py-1.5 text-xs font-semibold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="shrink-0 rounded-md border border-accent px-3 py-1.5 text-xs font-semibold text-accent hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
             >
-              {generatingSteps ? "Generating…" : "✦ Generate"}
+              {generatingSteps ? "Generating…" : "Generate"}
             </button>
           </div>
 
@@ -491,11 +491,11 @@ export default function BuildPage() {
                     <span className="text-sm font-medium text-blue-800 dark:text-blue-200 truncate">{uploadedDoc.name}</span>
                     <span className="text-xs text-blue-500 shrink-0">{Math.round(uploadedDoc.text.length / 1000)}k chars</span>
                   </div>
-                  <button onClick={() => setUploadedDoc(null)} className="ml-3 text-blue-400 hover:text-red-400 transition-colors text-base leading-none shrink-0" aria-label="Remove">×</button>
+                  <button onClick={() => setUploadedDoc(null)} className="ml-3 text-text-tertiary hover:text-red-600 transition-colors text-sm leading-none shrink-0" aria-label="Remove">×</button>
                 </div>
               ) : (
-                <button onClick={() => fileInputRef.current?.click()} className="w-full rounded-lg border border-dashed border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm text-gray-400 hover:text-gray-600 hover:border-gray-400 transition-colors text-center">
-                  + Upload document
+                <button onClick={() => fileInputRef.current?.click()} className="w-full rounded-md border border-dashed border-border-strong px-4 py-2.5 text-sm text-text-tertiary hover:text-text-secondary hover:border-border-strong transition-colors text-center">
+                  Upload document
                 </button>
               )}
             </div>
@@ -506,15 +506,15 @@ export default function BuildPage() {
           <ol className="space-y-2">
             {steps.map((step, i) => (
               <li key={i} className="flex items-center gap-2">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 dark:bg-gray-100 text-xs font-bold text-white dark:text-gray-900">{i + 1}</span>
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-text-primary text-xs font-bold text-surface">{i + 1}</span>
                 <input type="text" value={step} onChange={(e) => updateStep(i, e.target.value)} placeholder={`Step ${i + 1}`}
                   className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                {steps.length > 1 && <button onClick={() => removeStep(i)} className="text-gray-300 hover:text-red-400 transition-colors text-lg leading-none" aria-label="Remove step">×</button>}
+                {steps.length > 1 && <button onClick={() => removeStep(i)} className="text-text-tertiary hover:text-red-600 transition-colors text-sm leading-none" aria-label="Remove step">×</button>}
               </li>
             ))}
           </ol>
-          <button onClick={addStep} className="w-full rounded-lg border border-dashed border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm text-gray-400 hover:text-gray-600 hover:border-gray-400 transition-colors">
-            + Add step
+          <button onClick={addStep} className="w-full rounded-md border border-dashed border-border-strong px-4 py-2.5 text-sm text-text-tertiary hover:text-text-secondary hover:border-border-strong transition-colors">
+            Add step
           </button>
 
           {/* Tone */}
@@ -523,7 +523,7 @@ export default function BuildPage() {
             <div className="flex gap-2">
               {TONE_OPTIONS.map((t) => (
                 <button key={t.id} onClick={() => setTone(t.id)}
-                  className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${tone === t.id ? "border-gray-900 bg-gray-900 text-white dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900" : "border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-gray-500"}`}>
+                  className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium transition-colors ${tone === t.id ? "border-text-primary bg-text-primary text-surface" : "border-border-strong text-text-secondary hover:border-text-primary"}`}>
                   {t.label}
                 </button>
               ))}
@@ -534,8 +534,8 @@ export default function BuildPage() {
           <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-800">
             {testResult ? (
               <button onClick={handleImprove}
-                className="w-full rounded-full border border-blue-600 px-6 py-2.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
-                ⭐ Rate &amp; Improve →
+                className="w-full rounded-md border border-accent px-6 py-2.5 text-sm font-semibold text-accent hover:opacity-80 transition-opacity">
+                Rate &amp; Improve
               </button>
             ) : (
               <p className="text-xs text-gray-400 text-center">Run a test to rate and improve the agent.</p>
@@ -557,7 +557,7 @@ export default function BuildPage() {
             <div className="flex flex-wrap gap-2">
               {OUTPUT_CHIPS.map((chip) => (
                 <button key={chip.id} onClick={() => toggleOutput(chip.id)}
-                  className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${selectedOutputs.includes(chip.id) ? "border-blue-600 bg-blue-600 text-white" : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-400 hover:text-blue-600"}`}>
+                  className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${selectedOutputs.includes(chip.id) ? "border-text-primary bg-text-primary text-surface" : "border-border-strong text-text-secondary hover:border-text-primary hover:text-text-primary"}`}>
                   {chip.label}
                 </button>
               ))}
@@ -589,8 +589,8 @@ export default function BuildPage() {
                             <p className="font-semibold mb-1">⚠ Possible policy conflict</p>
                             <p className="mb-2">{(conflicts[i] as { reason: string }).reason}</p>
                             <div className="flex gap-2">
-                              <button onClick={() => setApproved((p) => p.map((a, idx) => idx === i ? true : a))} className="rounded-full bg-amber-700 text-white px-3 py-1 text-xs font-semibold hover:bg-amber-800 transition-colors">Use it anyway</button>
-                              <button onClick={() => { updateExample(i, "output", ""); setConflicts((p) => p.map((c, idx) => idx === i ? null : c)); }} className="rounded-full border border-amber-400 px-3 py-1 text-xs font-semibold hover:bg-amber-100 transition-colors">Follow policy</button>
+                              <button onClick={() => setApproved((p) => p.map((a, idx) => idx === i ? true : a))} className="rounded-md bg-amber-700 text-white px-3 py-1 text-xs font-semibold hover:opacity-80 transition-opacity">Use it anyway</button>
+                              <button onClick={() => { updateExample(i, "output", ""); setConflicts((p) => p.map((c, idx) => idx === i ? null : c)); }} className="rounded-md border border-amber-400 px-3 py-1 text-xs font-semibold hover:bg-amber-50 transition-colors">Follow policy</button>
                             </div>
                           </>
                         )}
@@ -662,8 +662,8 @@ export default function BuildPage() {
           <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-800">
             {testResult ? (
               <button onClick={handleImprove}
-                className="w-full rounded-full border border-blue-600 px-6 py-2.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
-                ⭐ Rate &amp; Improve →
+                className="w-full rounded-md border border-accent px-6 py-2.5 text-sm font-semibold text-accent hover:opacity-80 transition-opacity">
+                Rate &amp; Improve
               </button>
             ) : (
               <p className="text-xs text-gray-400 text-center">Run a test to rate and improve the agent.</p>

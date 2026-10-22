@@ -85,17 +85,17 @@ export default function TestPage() {
           {result && (
             <button
               onClick={() => router.push("/improve")}
-              className="rounded-full border border-blue-600 px-4 py-1.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+              className="rounded-md border border-accent px-4 py-1.5 text-sm font-semibold text-accent hover:opacity-80 transition-opacity"
             >
-              Rate this output →
+              Rate this output
             </button>
           )}
           <button
             onClick={handleRun}
             disabled={!canRun || !isReady}
-            className="rounded-full bg-gray-900 dark:bg-gray-100 px-5 py-2 text-sm font-semibold text-white dark:text-gray-900 transition-colors hover:bg-gray-700 dark:hover:bg-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="rounded-md bg-text-primary px-5 py-2 text-sm font-semibold text-surface transition-opacity hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {loading ? "Running…" : "▶ Run"}
+            {loading ? "Running…" : "Run"}
           </button>
         </div>
       </div>
@@ -178,8 +178,8 @@ export default function TestPage() {
                       isDone
                         ? "bg-green-500 text-white"
                         : isActive
-                        ? "bg-blue-600 text-white animate-pulse"
-                        : "bg-gray-200 dark:bg-gray-700 text-gray-400"
+                        ? "bg-accent text-white animate-pulse"
+                        : "bg-border-strong text-text-tertiary"
                     }`}>
                       {isDone ? "✓" : i + 1}
                     </span>
@@ -243,8 +243,7 @@ export default function TestPage() {
           {/* Empty state */}
           {!loading && !result && (
             <div className="rounded-lg border border-dashed border-gray-300 dark:border-gray-600 px-4 py-12 text-center text-sm text-gray-400">
-              Output will appear here after you click{" "}
-              <strong className="text-gray-600 dark:text-gray-300">▶ Run</strong>.
+              Output will appear here after you click Run.
             </div>
           )}
 

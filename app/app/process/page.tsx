@@ -117,7 +117,7 @@ export default function ProcessPage() {
         <ol className="space-y-3 mb-10">
           {steps.map((step, i) => (
             <li key={i} className="flex items-start gap-3">
-              <span className="mt-2.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+              <span className="mt-2.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-text-primary text-xs font-bold text-surface">
                 {i + 1}
               </span>
               <input
@@ -135,9 +135,9 @@ export default function ProcessPage() {
       {!loading && steps.length > 0 && (
         <button
           onClick={handleApprove}
-          className="w-full rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+          className="w-full rounded-md bg-text-primary px-6 py-3 text-sm font-semibold text-surface transition-opacity hover:opacity-80"
         >
-          Looks good — run it →
+          Looks good — run it
         </button>
       )}
     </div>

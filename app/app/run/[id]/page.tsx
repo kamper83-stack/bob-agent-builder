@@ -97,9 +97,9 @@ function RunPageInner() {
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={() => router.push("/")}
-            className="text-sm text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors shrink-0"
+            className="text-sm text-text-tertiary hover:text-text-primary transition-colors shrink-0"
           >
-            ← Agents
+            Agents
           </button>
           <span className="text-gray-300 dark:text-gray-600">|</span>
           <span className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">{displayName}</span>
@@ -108,17 +108,17 @@ function RunPageInner() {
           {result && (
             <button
               onClick={() => router.push("/improve")}
-              className="rounded-full border border-blue-600 px-4 py-1.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+              className="rounded-md border border-accent px-4 py-1.5 text-sm font-semibold text-accent hover:opacity-80 transition-opacity"
             >
-              Rate & Improve →
+              Rate &amp; Improve
             </button>
           )}
           <button
             onClick={handleRun}
             disabled={!canRun}
-            className="rounded-full bg-gray-900 dark:bg-gray-100 px-5 py-1.5 text-sm font-semibold text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="rounded-md bg-text-primary px-5 py-1.5 text-sm font-semibold text-surface hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
           >
-            {loading ? "Running…" : "▶ Run"}
+            {loading ? "Running…" : "Run"}
           </button>
         </div>
       </div>
@@ -154,14 +154,14 @@ function RunPageInner() {
                 <span className="text-sm">📄</span>
                 <span className="text-sm font-medium text-blue-800 dark:text-blue-200 truncate">{uploadedInput.name}</span>
               </div>
-              <button onClick={() => { setUploadedInput(null); setInputText(""); }} className="ml-3 text-blue-400 hover:text-red-400 transition-colors text-base leading-none shrink-0" aria-label="Remove">×</button>
+              <button onClick={() => { setUploadedInput(null); setInputText(""); }} className="ml-3 text-text-tertiary hover:text-red-600 transition-colors text-sm leading-none shrink-0" aria-label="Remove">×</button>
             </div>
           ) : (
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="w-full rounded-lg border border-dashed border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm text-gray-400 hover:text-gray-600 hover:border-gray-400 transition-colors text-center"
+              className="w-full rounded-md border border-dashed border-border-strong px-4 py-2.5 text-sm text-text-tertiary hover:text-text-secondary hover:border-border-strong transition-colors text-center"
             >
-              + Upload input file
+              Upload input file
             </button>
           )}
 
@@ -197,8 +197,8 @@ function RunPageInner() {
                   <li key={i} className="flex items-start gap-3">
                     <span className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors ${
                       isDone   ? "bg-green-500 text-white" :
-                      isActive ? "bg-blue-600 text-white animate-pulse" :
-                                 "bg-gray-200 dark:bg-gray-700 text-gray-400"
+                      isActive ? "bg-accent text-white animate-pulse" :
+                                 "bg-border-strong text-text-tertiary"
                     }`}>
                       {isDone ? "✓" : i + 1}
                     </span>
