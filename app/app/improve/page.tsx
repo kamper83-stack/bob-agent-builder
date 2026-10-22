@@ -80,7 +80,7 @@ export default function ImprovePage() {
         <div className="mb-8 rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300">
           No run to rate yet.{" "}
           <button
-            onClick={() => router.push("/test")}
+            onClick={() => router.push("/build")}
             className="underline font-medium"
           >
             Go to Test
@@ -203,7 +203,7 @@ export default function ImprovePage() {
             ✓ Agent instructions updated. Run another test to see the improvement.
           </div>
           <button
-            onClick={() => router.push("/test")}
+            onClick={() => router.push("/build")}
             className="w-full rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
           >
             Run agent again →
