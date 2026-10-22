@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { getApiUrl } from "../../lib/api";
 import { useAgent } from "../context/AgentContext";
 
 const STARS = [1, 2, 3, 4, 5];
@@ -30,7 +29,8 @@ export default function ImprovePage() {
     setSuggestion("");
 
     try {
-      const res = await fetch(getApiUrl("/improve"), {
+      // H4: call the Next.js proxy route — keeps BACKEND_URL server-side only
+      const res = await fetch("/api/improve", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -55,9 +55,9 @@ export default function ImprovePage() {
 
   function handleAccept() {
     if (!suggestion) return;
-    setAgentDef({
-      agentInstructions: agentDef.agentInstructions + "\n\n" + suggestion,
-    });
+    // C3: replace instructions with the accepted suggestion — do not append.
+    // Appending causes unbounded prompt growth across improvement loops.
+    setAgentDef({ agentInstructions: suggestion });
     setAccepted(true);
   }
 
