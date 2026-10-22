@@ -63,7 +63,7 @@ export default function ProcessPage() {
       {/* Heading */}
       <div className="mb-10">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Here's what the agent will do
+          Here&apos;s what the agent will do
         </h1>
         <p className="mt-2 text-sm text-gray-500">
           Review the steps. Edit any step in plain language, then approve.
