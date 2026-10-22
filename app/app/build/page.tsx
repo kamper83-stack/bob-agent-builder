@@ -409,11 +409,11 @@ export default function BuildPage() {
             />
           </div>
 
-          {/* Examples */}
+          {/* Examples — input only */}
           <div>
             <p className="text-xs font-semibold text-gray-500 mb-2">
-              Examples{" "}
-              <span className="font-normal text-gray-400">— show a real input and the ideal output</span>
+              Few-shot examples{" "}
+              <span className="font-normal text-gray-400">— sample inputs the agent should handle</span>
             </p>
             <div className="space-y-3">
               {localExamples.map((ex, i) => (
@@ -421,37 +421,14 @@ export default function BuildPage() {
                   <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60">
                     <span className="text-xs font-semibold text-gray-500">Example {i + 1}</span>
                     {localExamples.length > 1 && (
-                      <button onClick={() => removeExample(i)} className="text-gray-300 hover:text-red-400 transition-colors text-base leading-none" aria-label="Remove">×</button>
+                      <button onClick={() => removeExample(i)} className="text-gray-300 hover:text-red-400 transition-colors text-base leading-none" aria-label="Remove example">×</button>
                     )}
                   </div>
-                  <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                    <div className="px-3 py-2">
-                      <p className="text-xs font-medium text-gray-400 mb-1">Input</p>
-                      <textarea rows={2} value={ex.input} onChange={(e) => updateExample(i, "input", e.target.value)}
-                        placeholder="Paste a real input example…"
-                        className="w-full bg-transparent text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none resize-none" />
-                    </div>
-                    <div className="px-3 py-2">
-                      <p className="text-xs font-medium text-gray-400 mb-1">Ideal output <span className="font-normal">(optional)</span></p>
-                      <textarea rows={2} value={ex.output} onChange={(e) => updateExample(i, "output", e.target.value)} onBlur={() => checkOutputConflict(i)}
-                        placeholder="Leave blank to follow company policy"
-                        className="w-full bg-transparent text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none resize-none" />
-                      {conflicts[i] === "checking" && <p className="text-xs text-gray-400 mt-1">Checking against policy…</p>}
-                      {conflicts[i] && conflicts[i] !== "checking" && (conflicts[i] as { conflict: boolean }).conflict && (
-                        <div className={`mt-2 rounded-lg border px-3 py-2 text-xs ${approved[i] ? "border-green-200 bg-green-50 dark:border-green-700 dark:bg-green-900/20 text-green-700" : "border-amber-200 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/20 text-amber-800"}`}>
-                          {approved[i] ? <span>⚠ Using despite policy conflict.</span> : (
-                            <>
-                              <p className="font-semibold mb-1">⚠ Possible policy conflict</p>
-                              <p className="mb-2">{(conflicts[i] as { reason: string }).reason}</p>
-                              <div className="flex gap-2">
-                                <button onClick={() => setApproved((p) => p.map((a, idx) => idx === i ? true : a))} className="rounded-full bg-amber-700 text-white px-3 py-1 text-xs font-semibold hover:bg-amber-800 transition-colors">Use it anyway</button>
-                                <button onClick={() => { updateExample(i, "output", ""); setConflicts((p) => p.map((c, idx) => idx === i ? null : c)); }} className="rounded-full border border-amber-400 px-3 py-1 text-xs font-semibold hover:bg-amber-100 transition-colors">Follow policy</button>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                  <div className="px-3 py-2">
+                    <p className="text-xs font-medium text-gray-400 mb-1">Sample input</p>
+                    <textarea rows={2} value={ex.input} onChange={(e) => updateExample(i, "input", e.target.value)}
+                      placeholder="Paste a real user message, email, ticket, or file excerpt…"
+                      className="w-full bg-transparent text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none resize-none" />
                   </div>
                 </div>
               ))}
@@ -587,10 +564,48 @@ export default function BuildPage() {
             </div>
           </div>
 
+          {/* Ideal outputs per example */}
+          <div>
+            <p className="text-xs font-semibold text-gray-500 mb-2">
+              Ideal outputs{" "}
+              <span className="font-normal text-gray-400">— one per example, leave blank to follow company policy</span>
+            </p>
+            <div className="space-y-3">
+              {localExamples.map((ex, i) => (
+                <div key={i} className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
+                  <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60">
+                    <span className="text-xs font-semibold text-gray-500">Example {i + 1}</span>
+                  </div>
+                  <div className="px-3 py-2">
+                    <p className="text-xs font-medium text-gray-400 mb-1">Ideal output <span className="font-normal">(optional)</span></p>
+                    <textarea rows={2} value={ex.output} onChange={(e) => updateExample(i, "output", e.target.value)} onBlur={() => checkOutputConflict(i)}
+                      placeholder="Leave blank to follow company policy"
+                      className="w-full bg-transparent text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none resize-none" />
+                    {conflicts[i] === "checking" && <p className="text-xs text-gray-400 mt-1">Checking against policy…</p>}
+                    {conflicts[i] && conflicts[i] !== "checking" && (conflicts[i] as { conflict: boolean }).conflict && (
+                      <div className={`mt-2 rounded-lg border px-3 py-2 text-xs ${approved[i] ? "border-green-200 bg-green-50 dark:border-green-700 dark:bg-green-900/20 text-green-700" : "border-amber-200 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/20 text-amber-800"}`}>
+                        {approved[i] ? <span>⚠ Using despite policy conflict.</span> : (
+                          <>
+                            <p className="font-semibold mb-1">⚠ Possible policy conflict</p>
+                            <p className="mb-2">{(conflicts[i] as { reason: string }).reason}</p>
+                            <div className="flex gap-2">
+                              <button onClick={() => setApproved((p) => p.map((a, idx) => idx === i ? true : a))} className="rounded-full bg-amber-700 text-white px-3 py-1 text-xs font-semibold hover:bg-amber-800 transition-colors">Use it anyway</button>
+                              <button onClick={() => { updateExample(i, "output", ""); setConflicts((p) => p.map((c, idx) => idx === i ? null : c)); }} className="rounded-full border border-amber-400 px-3 py-1 text-xs font-semibold hover:bg-amber-100 transition-colors">Follow policy</button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Upload example output */}
           <div>
             <p className="text-xs font-semibold text-gray-500 mb-2">
-              Example output file <span className="font-normal text-gray-400">— upload a real doc as style reference</span>
+              Reference output file <span className="font-normal text-gray-400">— upload a real doc as style reference</span>
             </p>
             <input type="file" accept=".pdf,.docx,.txt" className="hidden" id="output-file-upload"
               onChange={(e) => {
