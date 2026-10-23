@@ -6,46 +6,49 @@ type Theme = "light" | "dark" | "system";
 
 interface ThemeContextValue {
   theme: Theme;
-  resolvedTheme: "light" | "dark";
+  /** null before first client render — use to suppress hydration-sensitive UI */
+  resolvedTheme: "light" | "dark" | null;
   setTheme: (t: Theme) => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
   theme: "system",
-  resolvedTheme: "light",
+  resolvedTheme: null,
   setTheme: () => {},
 });
 
 const STORAGE_KEY = "agent-studio:theme";
 
 function getSystemTheme(): "light" | "dark" {
-  if (typeof window === "undefined") return "light";
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("system");
+  // null until after first client paint — prevents server/client mismatch
+  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark" | null>(null);
 
-  // Resolve and apply on mount
   useEffect(() => {
     const stored = (localStorage.getItem(STORAGE_KEY) as Theme | null) ?? "system";
+    const resolved = stored === "system" ? getSystemTheme() : stored;
     setThemeState(stored);
-  }, []);
+    setResolvedTheme(resolved);
 
-  // Apply class to <html> whenever theme changes
-  useEffect(() => {
-    const resolved = theme === "system" ? getSystemTheme() : theme;
     const html = document.documentElement;
     html.classList.remove("light", "dark");
     html.classList.add(resolved);
-  }, [theme]);
+  }, []);
 
   function setTheme(t: Theme) {
+    const resolved = t === "system" ? getSystemTheme() : t;
     setThemeState(t);
+    setResolvedTheme(resolved);
     localStorage.setItem(STORAGE_KEY, t);
-  }
 
-  const resolvedTheme = theme === "system" ? getSystemTheme() : theme;
+    const html = document.documentElement;
+    html.classList.remove("light", "dark");
+    html.classList.add(resolved);
+  }
 
   return (
     <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme }}>

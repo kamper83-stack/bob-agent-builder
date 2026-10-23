@@ -13,6 +13,12 @@ const steps = [
 
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
+
+  // Render a placeholder until client has hydrated — avoids server/client mismatch
+  if (resolvedTheme === null) {
+    return <div className="ml-4 h-8 w-8 shrink-0" aria-hidden="true" />;
+  }
+
   const isDark = resolvedTheme === "dark";
 
   return (
