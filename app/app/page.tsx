@@ -48,7 +48,7 @@ export default function Home() {
         </div>
         <button
           onClick={handleNew}
-          className="rounded-full bg-gray-900 dark:bg-gray-100 px-5 py-2.5 text-sm font-semibold text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-300 transition-colors"
+          className="rounded-full bg-structural px-5 py-2.5 text-sm font-semibold text-surface hover:opacity-90 transition-opacity"
         >
           + New agent
         </button>
