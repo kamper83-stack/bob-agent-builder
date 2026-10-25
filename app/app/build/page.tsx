@@ -27,8 +27,19 @@ const TONE_OPTIONS = [
 ];
 
 const CONNECTORS = [
-  { id: "google_calendar", label: "Google Calendar", detail: "calendar@company.co.il · connected" },
-  { id: "email_connector", label: "Email", detail: "smtp.company.co.il · connected" },
+  {
+    id: "google_calendar",
+    label: "Google Calendar",
+    detail: "calendar@company.co.il · connected",
+  },
+  {
+    id: "email_connector",
+    label: "Email",
+    detail: process.env.NEXT_PUBLIC_MAILPIT_URL
+      ? `Mailpit (${process.env.NEXT_PUBLIC_SMTP_HOST ?? "localhost:1025"}) · connected`
+      : "smtp.company.co.il · connected",
+    href: process.env.NEXT_PUBLIC_MAILPIT_URL,
+  },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -444,7 +455,18 @@ export default function BuildPage() {
                 <div key={c.id} className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3">
                   <div>
                     <p className="text-sm font-medium text-gray-800 dark:text-gray-100">{c.label}</p>
-                    <p className="text-xs text-gray-400">{c.detail}</p>
+                    {"href" in c && c.href ? (
+                      <a
+                        href={c.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-blue-500 hover:underline"
+                      >
+                        {c.detail}
+                      </a>
+                    ) : (
+                      <p className="text-xs text-gray-400">{c.detail}</p>
+                    )}
                   </div>
                   <div className="relative inline-flex h-5 w-9 items-center rounded-full bg-blue-600">
                     <span className="inline-block h-3.5 w-3.5 translate-x-4 rounded-full bg-white" />
