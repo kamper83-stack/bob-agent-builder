@@ -2,3 +2,7 @@
 .secrets
 *.env
 *.env.local
+
+# Google Calendar OAuth — token and credentials files
+src/credentials.json
+src/token.json
