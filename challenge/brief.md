@@ -40,11 +40,12 @@
 - Mock interfaces: `challenge/interfaces.md`
 
 ## Open questions
-- What does the blueprint claim? (to be decided)
+- ~~What does the blueprint claim?~~ Blueprint written as a plan.
 
 ## Next step
-- `usability-pass` — walk the mockups as a first-time user and find what would stop a real one before building begins.
-- Or: start building the PoC (week-1 gate: improvement loop closes end-to-end).
+- Run `app/SMOKE_TEST.md` checklist end-to-end (needs watsonx credentials in `.env`).
+- Gate test: `python tests/test_improvement_gate.py` (requires live watsonx credentials).
+- Submit / pre-submission check when gate passes.
 
 ## Log
 - Brief created.
@@ -56,3 +57,8 @@
 - Demo use case: customer service complaint handler (customer service manager as user).
 - PoC scoped: thin slice defined, component table agreed, invented data generated (seed 42), mock interfaces written.
 - Blueprint written as a plan (carbon theme): challenge/blueprint.html (72 KB), challenge/blueprint.pdf. No warnings.
+- Track A complete (A1–A5): watsonx client, agent runner, mock policy store, improvement engine, gate test.
+- Track B complete (B1–B5): Next.js + Tailwind scaffold, Define/Test/Improve screens, API proxy wired to backend.
+- S1 complete: end-to-end smoke test checklist written (app/SMOKE_TEST.md).
+- src/api.py created: FastAPI backend exposing /run and /improve for the Next.js proxy.
+- All feature branches merged to main.

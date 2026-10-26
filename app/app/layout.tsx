@@ -1,13 +1,20 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Geist, IBM_Plex_Sans } from "next/font/google";
 import React from "react";
 import NavBar from "./components/NavBar";
 import { AgentProvider } from "./context/AgentContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+});
+
+const ibmPlexSans = IBM_Plex_Sans({
+  variable: "--font-ibm-plex-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -17,12 +24,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geistSans.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-gray-50 font-sans">
-        <AgentProvider>
-          <NavBar />
-          <main className="flex-1">{children}</main>
-        </AgentProvider>
+    <html lang="en" className={`${geistSans.variable} ${ibmPlexSans.variable} h-full antialiased`}>
+      <body className="h-full flex flex-col bg-canvas font-sans text-text-primary">
+        <ThemeProvider>
+          <AgentProvider>
+            <NavBar />
+            <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
+          </AgentProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

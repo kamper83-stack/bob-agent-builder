@@ -1,21 +1,91 @@
 @import "tailwindcss";
 
+/* ── Light mode tokens ─────────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surfaces */
+  --canvas:  #F8F8F7;
+  --surface: #FFFFFF;
+
+  /* Borders */
+  --border-subtle: #E4E4E2;
+  --border-strong: #C8C8C4;
+
+  /* Text */
+  --text-primary:   #111110;
+  --text-secondary: #6B6B68;
+  --text-tertiary:  #9B9B97;
+
+  /* Accent — reserved for AI-active / AI-generating states only */
+  --accent: #C2460A;
+
+  /* Structural — nav active state, focus rings */
+  --structural: #4338CA;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* ── Dark mode tokens ──────────────────────────────────────────────────────── */
+/* Applied via .dark class on <html> (ThemeProvider) — media query is the
+   fallback before JS hydrates so the page never flashes. */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not(.light) {
+    --canvas:  #131312;
+    --surface: #1C1C1A;
+
+    --border-subtle: #2A2A27;
+    --border-strong: #3D3D39;
+
+    --text-primary:   #F0EFEC;
+    --text-secondary: #A09F9A;
+    --text-tertiary:  #6B6B68;
+
+    --accent:     #E0622A;
+    --structural: #818CF8;
   }
 }
 
+.dark {
+  --canvas:  #131312;
+  --surface: #1C1C1A;
+
+  --border-subtle: #2A2A27;
+  --border-strong: #3D3D39;
+
+  --text-primary:   #F0EFEC;
+  --text-secondary: #A09F9A;
+  --text-tertiary:  #6B6B68;
+
+  --accent:     #E0622A;
+  --structural: #818CF8;
+}
+
+.light {
+  --canvas:  #F8F8F7;
+  --surface: #FFFFFF;
+
+  --border-subtle: #E4E4E2;
+  --border-strong: #C8C8C4;
+
+  --text-primary:   #111110;
+  --text-secondary: #6B6B68;
+  --text-tertiary:  #9B9B97;
+
+  --accent: #C2460A;
+  --structural: #4338CA;
+}
+
+/* ── Tailwind v4 theme registration ────────────────────────────────────────── */
+@theme inline {
+  /* Semantic color utilities: bg-canvas, text-canvas, border-canvas, etc. */
+  --color-canvas:         var(--canvas);
+  --color-surface:        var(--surface);
+  --color-border-subtle:  var(--border-subtle);
+  --color-border-strong:  var(--border-strong);
+  --color-text-primary:   var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary:  var(--text-tertiary);
+  --color-accent:         var(--accent);
+  --color-structural:     var(--structural);
+
+  /* Fonts */
+  --font-sans:    var(--font-geist-sans);
+  --font-display: var(--font-ibm-plex-sans);
+}
