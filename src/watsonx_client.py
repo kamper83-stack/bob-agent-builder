@@ -19,7 +19,7 @@ load_dotenv()
 # ── defaults ──────────────────────────────────────────────────────────────────
 DEFAULT_MODEL = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
 DEFAULT_TEMPERATURE = 0.3
-DEFAULT_MAX_TOKENS = 800
+DEFAULT_MAX_TOKENS = 2048
 
 
 def _get_client() -> genai.Client:

@@ -84,7 +84,7 @@ def _get_service() -> Any:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(str(credentials_path), SCOPES)
-            creds = flow.run_local_server(port=0)
+            creds = flow.run_local_server(port=8080)
         token_path.write_text(creds.to_json())
 
     return google_build("calendar", "v3", credentials=creds)

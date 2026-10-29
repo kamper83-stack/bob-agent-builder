@@ -26,8 +26,9 @@ const TONE_OPTIONS = [
   { id: "mine", label: "My style" },
 ];
 
+const GCAL_EMAIL = process.env.NEXT_PUBLIC_GCAL_EMAIL || "calendar@company.co.il";
 const CONNECTORS = [
-  { id: "google_calendar", label: "Google Calendar", detail: "calendar@company.co.il · connected" },
+  { id: "google_calendar", label: "Google Calendar", detail: `${GCAL_EMAIL} · connected` },
   { id: "email_connector", label: "Email", detail: "smtp.company.co.il · connected" },
 ];
 
@@ -111,6 +112,14 @@ export default function BuildPage() {
   const [clarification, setClarification]       = useState<string | null>(null);
   const [clarificationAnswer, setClarificationAnswer] = useState("");
   const [checkingConfidence, setCheckingConfidence]   = useState(false);
+
+  // ── Connector toggle state ────────────────────────────────────────────────
+  const [enabledConnectors, setEnabledConnectors] = useState<Record<string, boolean>>(
+    () => Object.fromEntries(CONNECTORS.map((c) => [c.id, true]))
+  );
+  function toggleConnector(id: string) {
+    setEnabledConnectors((prev) => ({ ...prev, [id]: !prev[id] }));
+  }
 
   // ── Save state ────────────────────────────────────────────────────────────
   const [saved, setSaved] = useState(false);
@@ -440,17 +449,28 @@ export default function BuildPage() {
           <div>
             <p className="text-xs font-semibold text-gray-500 mb-2">Connectors</p>
             <div className="space-y-2">
-              {CONNECTORS.map((c) => (
-                <div key={c.id} className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3">
-                  <div>
-                    <p className="text-sm font-medium text-gray-800 dark:text-gray-100">{c.label}</p>
-                    <p className="text-xs text-gray-400">{c.detail}</p>
+              {CONNECTORS.map((c) => {
+                const on = enabledConnectors[c.id];
+                return (
+                  <div key={c.id} className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3">
+                    <div>
+                      <p className="text-sm font-medium text-gray-800 dark:text-gray-100">{c.label}</p>
+                      <p className="text-xs text-gray-400">
+                        {on ? c.detail : "disconnected"}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={on}
+                      onClick={() => toggleConnector(c.id)}
+                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${on ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600"}`}
+                    >
+                      <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${on ? "translate-x-4" : "translate-x-1"}`} />
+                    </button>
                   </div>
-                  <div className="relative inline-flex h-5 w-9 items-center rounded-full bg-blue-600">
-                    <span className="inline-block h-3.5 w-3.5 translate-x-4 rounded-full bg-white" />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

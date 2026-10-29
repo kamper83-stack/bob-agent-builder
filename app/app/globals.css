@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Tell Tailwind v4 to activate dark: utilities when .dark is on <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ── Light mode tokens ─────────────────────────────────────────────────────── */
 :root {
   /* Surfaces */
