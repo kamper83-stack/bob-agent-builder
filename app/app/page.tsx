@@ -39,19 +39,11 @@ export default function Home() {
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">
       {/* Header */}
-      <div className="flex items-center justify-between mb-10">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Agents</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Build, tune, and run AI agents grounded in company knowledge.
-          </p>
-        </div>
-        <button
-          onClick={handleNew}
-          className="rounded-full bg-gray-900 dark:bg-gray-100 px-5 py-2.5 text-sm font-semibold text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-300 transition-colors"
-        >
-          + New agent
-        </button>
+      <div className="mb-10">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Agents</h1>
+        <p className="mt-1 text-sm text-gray-500">
+          Build, tune, and run AI agents grounded in company knowledge.
+        </p>
       </div>
 
       {/* Empty state */}

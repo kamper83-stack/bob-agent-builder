@@ -7,7 +7,7 @@
  * maxStep: 0 = home, 1 = build done, 2 = run done, 3 = improve done
  */
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 export interface AgentExample {
   input: string;
@@ -100,33 +100,31 @@ const AgentContext = createContext<AgentContextValue>({
 });
 
 export function AgentProvider({ children }: { children: React.ReactNode }) {
-  const [agentDef, setAgentDefState] = useState<AgentDef>(() => {
-    if (typeof window === "undefined") return DEFAULT_DEF;
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? (JSON.parse(stored) as AgentDef) : DEFAULT_DEF;
-    } catch { return DEFAULT_DEF; }
-  });
-
+  // Always start with defaults (matches SSR) — hydrate from localStorage after mount
+  const [agentDef, setAgentDefState] = useState<AgentDef>(DEFAULT_DEF);
   const [agentName, setAgentName] = useState("");
   const [examples, setExamples] = useState<AgentExample[]>([]);
   const [uploadedDoc, setUploadedDoc] = useState<UploadedDoc | null>(null);
   const [processSteps, setProcessSteps] = useState<string[]>([]);
   const [runResult, setRunResult] = useState<RunResult | null>(null);
+  const [maxStep, setMaxStepState] = useState<number>(0);
+  const [savedAgents, setSavedAgents] = useState<SavedAgent[]>([]);
 
-  const [maxStep, setMaxStepState] = useState<number>(() => {
-    if (typeof window === "undefined") return 0;
-    try { return parseInt(localStorage.getItem(MAX_STEP_KEY) ?? "0", 10); }
-    catch { return 0; }
-  });
-
-  const [savedAgents, setSavedAgents] = useState<SavedAgent[]>(() => {
-    if (typeof window === "undefined") return [];
+  // Load persisted state after first client render (avoids SSR/client mismatch)
+  useEffect(() => {
     try {
-      const stored = localStorage.getItem(AGENTS_KEY);
-      return stored ? (JSON.parse(stored) as SavedAgent[]) : [];
-    } catch { return []; }
-  });
+      const storedDef = localStorage.getItem(STORAGE_KEY);
+      if (storedDef) setAgentDefState(JSON.parse(storedDef) as AgentDef);
+    } catch {}
+    try {
+      const storedStep = localStorage.getItem(MAX_STEP_KEY);
+      if (storedStep) setMaxStepState(parseInt(storedStep, 10));
+    } catch {}
+    try {
+      const storedAgents = localStorage.getItem(AGENTS_KEY);
+      if (storedAgents) setSavedAgents(JSON.parse(storedAgents) as SavedAgent[]);
+    } catch {}
+  }, []);
 
   function setAgentDef(patch: Partial<AgentDef>) {
     setAgentDefState((prev) => {

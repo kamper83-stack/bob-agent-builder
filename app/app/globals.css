@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Tell Tailwind v4 to activate dark: utilities when .dark is on <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ── Light mode tokens ─────────────────────────────────────────────────────── */
 :root {
   /* Surfaces */
@@ -23,8 +26,10 @@
 }
 
 /* ── Dark mode tokens ──────────────────────────────────────────────────────── */
+/* Applied via .dark class on <html> (ThemeProvider) — media query is the
+   fallback before JS hydrates so the page never flashes. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.light) {
     --canvas:  #131312;
     --surface: #1C1C1A;
 
@@ -38,6 +43,36 @@
     --accent:     #E0622A;
     --structural: #818CF8;
   }
+}
+
+.dark {
+  --canvas:  #131312;
+  --surface: #1C1C1A;
+
+  --border-subtle: #2A2A27;
+  --border-strong: #3D3D39;
+
+  --text-primary:   #F0EFEC;
+  --text-secondary: #A09F9A;
+  --text-tertiary:  #6B6B68;
+
+  --accent:     #E0622A;
+  --structural: #818CF8;
+}
+
+.light {
+  --canvas:  #F8F8F7;
+  --surface: #FFFFFF;
+
+  --border-subtle: #E4E4E2;
+  --border-strong: #C8C8C4;
+
+  --text-primary:   #111110;
+  --text-secondary: #6B6B68;
+  --text-tertiary:  #9B9B97;
+
+  --accent: #C2460A;
+  --structural: #4338CA;
 }
 
 /* ── Tailwind v4 theme registration ────────────────────────────────────────── */
