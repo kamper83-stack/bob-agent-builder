@@ -24,9 +24,10 @@ Run (from repo root):
 Exits 0 on pass (>=8/10), 1 on fail.
 
 --- Gate report (fill in after running) ---
-Score   : /10
-Date    : TBD
-Notes   : TBD
+Score   : 10/10
+Date    : 2026-10-23
+Notes   : All 10 complaints passed. Root fix: DEFAULT_MAX_TOKENS raised from 800→2048
+          in watsonx_client.py to prevent JSON truncation with structured output schema.
 ---
 """
 

@@ -125,6 +125,17 @@ export default function NavBar() {
           })}
         </nav>
 
+        {/* Settings link */}
+        <Link
+          href="/settings"
+          className={`ml-4 flex items-center gap-1.5 px-3 py-1 text-sm font-medium transition-colors ${
+            pathname.startsWith("/settings")
+              ? "text-text-primary border-b-2 border-structural"
+              : "text-text-secondary hover:text-text-primary"
+          }`}
+        >
+          ⚙ Settings
+        </Link>
         <ThemeToggle />
       </div>
     </header>
