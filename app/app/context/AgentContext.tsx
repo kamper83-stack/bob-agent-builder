@@ -65,6 +65,9 @@ interface AgentContextValue {
   saveAgent: () => string;    // saves current state, returns the agent id
   loadAgent: (id: string) => void;
   deleteAgent: (id: string) => void;
+
+  /** true once localStorage has been read — use to suppress flash of wrong content */
+  mounted: boolean;
 }
 
 const DEFAULT_DEF: AgentDef = {
@@ -97,6 +100,7 @@ const AgentContext = createContext<AgentContextValue>({
   saveAgent: () => "",
   loadAgent: () => {},
   deleteAgent: () => {},
+  mounted: false,
 });
 
 export function AgentProvider({ children }: { children: React.ReactNode }) {
@@ -109,6 +113,7 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   const [runResult, setRunResult] = useState<RunResult | null>(null);
   const [maxStep, setMaxStepState] = useState<number>(0);
   const [savedAgents, setSavedAgents] = useState<SavedAgent[]>([]);
+  const [mounted, setMounted] = useState(false);
 
   // Load persisted state after first client render (avoids SSR/client mismatch)
   useEffect(() => {
@@ -124,6 +129,7 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
       const storedAgents = localStorage.getItem(AGENTS_KEY);
       if (storedAgents) setSavedAgents(JSON.parse(storedAgents) as SavedAgent[]);
     } catch {}
+    setMounted(true);
   }, []);
 
   function setAgentDef(patch: Partial<AgentDef>) {
@@ -189,6 +195,7 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
       runResult, setRunResult,
       maxStep, setMaxStep,
       savedAgents, saveAgent, loadAgent, deleteAgent,
+      mounted,
     }}>
       {children}
     </AgentContext.Provider>

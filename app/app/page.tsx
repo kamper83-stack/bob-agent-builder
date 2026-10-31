@@ -14,7 +14,7 @@ function formatDate(iso: string) {
 
 export default function Home() {
   const router = useRouter();
-  const { savedAgents, loadAgent, deleteAgent, setAgentDef, setAgentName, setExamples, setUploadedDoc, setProcessSteps } = useAgent();
+  const { savedAgents, loadAgent, deleteAgent, setAgentDef, setAgentName, setExamples, setUploadedDoc, setProcessSteps, mounted } = useAgent();
 
   function handleNew() {
     // Reset the builder state
@@ -34,6 +34,23 @@ export default function Home() {
   function handleEdit(id: string) {
     loadAgent(id);
     router.push("/build");
+  }
+
+  // Suppress content that depends on localStorage until after mount — prevents flash
+  if (!mounted) {
+    return (
+      <div className="mx-auto max-w-4xl px-6 py-12">
+        <div className="mb-10">
+          <div className="h-8 w-40 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse mb-2" />
+          <div className="h-4 w-64 rounded bg-gray-100 dark:bg-gray-800 animate-pulse" />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {[1, 2].map((n) => (
+            <div key={n} className="h-40 rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (
