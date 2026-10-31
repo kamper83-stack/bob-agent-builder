@@ -29,14 +29,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark" | null>(null);
 
   useEffect(() => {
+    // The inline script in layout.tsx already applied the class before hydration.
+    // Here we only sync React state to match — no DOM manipulation needed on mount.
     const stored = (localStorage.getItem(STORAGE_KEY) as Theme | null) ?? "system";
     const resolved = stored === "system" ? getSystemTheme() : stored;
     setThemeState(stored);
     setResolvedTheme(resolved);
-
-    const html = document.documentElement;
-    html.classList.remove("light", "dark");
-    html.classList.add(resolved);
   }, []);
 
   function setTheme(t: Theme) {
