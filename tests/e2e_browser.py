@@ -86,50 +86,34 @@ def test_home(page: Page) -> None:
     cta = page.get_by_role("button", name="Build your first agent")
     check('"Build your first agent" CTA button visible', cta.is_visible())
 
-    # NavBar: "Define" is a link, "Test" and "Improve" are disabled spans
-    define_link = page.locator("nav a[href='/define']")
-    check("NavBar step 1 (Define) is a clickable link", define_link.count() > 0)
+    # NavBar: "Build" is step 1 link (href changed from /define to /build in this PR)
+    build_link = page.locator("nav a[href='/build']")
+    check("NavBar step 1 (Build) is a clickable link", build_link.count() > 0)
 
     disabled_steps = page.locator("nav span[aria-disabled='true']")
     check("NavBar steps 2 and 3 are disabled", disabled_steps.count() >= 2)
 
 
-# ── Step 2: Define screen ─────────────────────────────────────────────────────
+# ── Step 2: /define redirect + /build smoke ──────────────────────────────────
 
 def test_define(page: Page) -> None:
-    print("\n── Step 2: Define screen (/define) ─────────────────────────────")
+    print("\n── Step 2: /define redirect + /build smoke ─────────────────────")
+
+    # /define is now a redirect to /build — verify it doesn't 404
     page.goto(f"{BASE}/define")
+    page.wait_for_url("**/build", timeout=8000)
+    check("/define redirects to /build", "/build" in page.url)
+    screenshot(page, "02_define_redirect")
+
+    # /build smoke: required fields and headings are present
     page.wait_for_load_state("networkidle")
-    screenshot(page, "02_define_empty")
-
-    # "Save and continue" is disabled when both fields are empty
-    save_btn = page.locator("button", has_text="Save and continue")
-    is_disabled = save_btn.get_attribute("disabled") is not None
-    check('"Save and continue" disabled when fields are empty', is_disabled)
-
-    # Input fields (type=text, identified by id)
-    input_field = page.locator("#input-type")
-    output_field = page.locator("#output-type")
-    policy_select = page.locator("#policy-doc")
-    check("Input-type field present", input_field.count() > 0)
-    check("Output-type field present", output_field.count() > 0)
-    check("Policy-doc select present", policy_select.count() > 0)
-
-    input_field.fill("A customer complaint email")
-    output_field.fill("A response email draft and an internal action note")
-    policy_select.select_option(value="service_policy")
-
-    # Save button should now be enabled
-    save_btn2 = page.locator("button", has_text="Save and continue")
-    is_enabled = save_btn2.get_attribute("disabled") is None
-    check('"Save and continue" enabled after filling fields', is_enabled)
-
-    screenshot(page, "02_define_filled")
-    save_btn2.click()
-    # Next.js App Router uses client-side routing — wait for URL change
-    page.wait_for_url("**/test", timeout=8000)
-    check("Redirected to /test after saving", "/test" in page.url)
-    screenshot(page, "02_define_after_save")
+    check('"Input example" heading visible on /build',
+          page.locator("text=Input example").is_visible())
+    check('"Sample input *" label visible',
+          page.locator("text=Sample input").first.is_visible())
+    check('"Output type *" label visible',
+          page.locator("text=Output type").is_visible())
+    screenshot(page, "02_build_smoke")
 
 
 # ── Step 3: Test screen ───────────────────────────────────────────────────────

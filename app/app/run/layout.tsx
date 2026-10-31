@@ -5,7 +5,6 @@
  * The /run/[id] page is the "use this agent" view used by operators, not builders.
  * It shows a minimal header with just the app wordmark and a link back to My Agents.
  */
-import React from "react";
 import Link from "next/link";
 
 export default function RunLayout({ children }: { children: React.ReactNode }) {
@@ -29,7 +28,7 @@ export default function RunLayout({ children }: { children: React.ReactNode }) {
           </span>
         </div>
       </header>
-      <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
+      <div className="flex-1 flex flex-col overflow-hidden">{children}</div>
     </div>
   );
 }

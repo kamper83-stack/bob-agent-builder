@@ -27,7 +27,7 @@ function RunPageInner() {
   const router = useRouter();
   const id = params?.id as string;
 
-  const { savedAgents, agentDef, processSteps, uploadedDoc } = useAgent();
+  const { savedAgents, agentDef, processSteps, uploadedDoc, loadAgent } = useAgent();
 
   // Find the saved agent to display its name
   const savedAgent = savedAgents.find((a) => a.id === id);
@@ -121,7 +121,7 @@ function RunPageInner() {
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <button
-            onClick={() => router.push("/build")}
+            onClick={() => { loadAgent(id); router.push("/build"); }}
             className="text-xs text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors border border-gray-200 dark:border-gray-700 rounded-full px-3 py-1"
           >
             ✎ Edit agent
