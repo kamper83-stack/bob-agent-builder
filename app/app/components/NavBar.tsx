@@ -6,7 +6,7 @@ import { useAgent } from "../context/AgentContext";
 import { useTheme } from "../context/ThemeContext";
 
 const steps = [
-  { label: "Define", href: "/define", step: 1 },
+  { label: "Build", href: "/build", step: 1 },
   { label: "Test", href: "/test", step: 2 },
   { label: "Improve", href: "/improve", step: 3 },
 ];
@@ -53,6 +53,9 @@ function ThemeToggle() {
 export default function NavBar() {
   const pathname = usePathname();
   const { maxStep, mounted } = useAgent();
+
+  // Hide the builder NavBar entirely on operator run pages — /run/* has its own layout
+  if (pathname.startsWith("/run/")) return null;
 
   // Use maxStep=0 until localStorage has been read — keeps SSR and first
   // client render identical, avoiding the hydration mismatch warning.
