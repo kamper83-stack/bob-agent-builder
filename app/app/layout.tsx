@@ -25,6 +25,19 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${ibmPlexSans.variable} h-full antialiased`}>
+      {/*
+        Inline script runs synchronously before React hydrates — reads the saved
+        theme from localStorage and applies the class to <html> immediately so
+        there is zero flash of unstyled / wrong-theme content.
+        dangerouslySetInnerHTML is intentional and safe: no user input, static string.
+      */}
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('agent-studio:theme');var r=t==='dark'?'dark':t==='light'?'light':window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.classList.add(r);}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="h-full flex flex-col bg-canvas font-sans text-text-primary">
         <ThemeProvider>
           <AgentProvider>
