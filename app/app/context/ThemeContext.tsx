@@ -23,6 +23,12 @@ function getSystemTheme(): "light" | "dark" {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
+function readStoredTheme(): { theme: Theme; resolvedTheme: "light" | "dark" } {
+  const stored = (localStorage.getItem(STORAGE_KEY) as Theme | null) ?? "system";
+  const resolved = stored === "system" ? getSystemTheme() : stored;
+  return { theme: stored, resolvedTheme: resolved };
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("system");
   // null until after first client paint — prevents server/client mismatch
@@ -31,11 +37,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // The inline script in layout.tsx already applied the class before hydration.
     // Here we only sync React state to match — no DOM manipulation needed on mount.
-    const stored = (localStorage.getItem(STORAGE_KEY) as Theme | null) ?? "system";
-    const resolved = stored === "system" ? getSystemTheme() : stored;
+    const { theme: storedTheme, resolvedTheme: storedResolved } = readStoredTheme();
     /* eslint-disable react-hooks/set-state-in-effect -- localStorage can only be read after hydration */
-    setThemeState(stored);
-    setResolvedTheme(resolved);
+    setThemeState(storedTheme);
+    setResolvedTheme(storedResolved);
     /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 

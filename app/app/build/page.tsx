@@ -413,37 +413,45 @@ function BuildForm() {
         <div className="flex-1 min-w-0 px-6 py-6 space-y-6 overflow-y-auto">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-1">1 · Input</p>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Test input</h2>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Input example</h2>
+            <p className="text-sm text-gray-400 mt-0.5">
               Paste a real example to test the agent during building.
             </p>
           </div>
 
-          <textarea
-            rows={4}
-            value={testInput}
-            onChange={(e) => setTestInput(e.target.value)}
-            placeholder={inputDesc ? `e.g. ${inputDesc}` : "Paste a real test input here…"}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-          />
-
-          {/* Input description */}
+          {/* Required: test input */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 mb-1">What does the agent receive?</p>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+              Sample input <span className="text-red-500">*</span>
+            </p>
+            <textarea
+              rows={4}
+              value={testInput}
+              onChange={(e) => setTestInput(e.target.value)}
+              placeholder={inputDesc ? `e.g. ${inputDesc}` : "Paste a real test input here…"}
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-3 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            />
+          </div>
+
+          {/* Required: input description */}
+          <div>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+              What does the agent receive? <span className="text-red-500">*</span>
+            </p>
             <textarea
               rows={2}
               value={inputDesc}
               onChange={(e) => setInputDesc(e.target.value)}
               placeholder="e.g. A customer complaint email with name and issue"
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             />
           </div>
 
-          {/* Examples — input only */}
+          {/* Examples — input only (optional) */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 mb-2">
-              Few-shot examples{" "}
-              <span className="font-normal text-gray-400">— sample inputs the agent should handle</span>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              Additional examples{" "}
+              <span className="font-normal text-gray-400">(optional) — more inputs the agent should handle</span>
             </p>
             <div className="space-y-3">
               {localExamples.map((ex, i) => (
@@ -468,7 +476,7 @@ function BuildForm() {
 
           {/* Connectors */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 mb-2">Connectors</p>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Connectors <span className="font-normal text-gray-400">(optional)</span></p>
             <div className="space-y-2">
               {CONNECTORS.map((c) => {
                 const on = enabledConnectors[c.id];
@@ -501,8 +509,8 @@ function BuildForm() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-1">2 · Process</p>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Policy & steps</h2>
-              <p className="text-xs text-gray-400 mt-0.5">Business logic and processing order.</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Policy & steps</h2>
+              <p className="text-sm text-gray-400 mt-0.5">Business logic and processing order.</p>
             </div>
             <button
               onClick={generateSteps}
@@ -515,7 +523,9 @@ function BuildForm() {
 
           {/* Policy doc */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 mb-2">Company document</p>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              Company document <span className="text-red-500">*</span>
+            </p>
             <div className="space-y-2">
               {POLICY_OPTIONS.map((opt) => (
                 <label key={opt.id} className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
@@ -543,13 +553,19 @@ function BuildForm() {
           </div>
 
           {/* Steps */}
+          <div>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              Processing steps <span className="text-red-500">*</span>
+              <span className="font-normal text-gray-400 ml-1">— use ✦ Generate or write your own</span>
+            </p>
+          </div>
           {stepsError && <p className="text-xs text-red-500">{stepsError}</p>}
           <ol className="space-y-2">
             {steps.map((step, i) => (
               <li key={i} className="flex items-center gap-2">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 dark:bg-gray-100 text-xs font-bold text-white dark:text-gray-900">{i + 1}</span>
                 <input type="text" value={step} onChange={(e) => updateStep(i, e.target.value)} placeholder={`Step ${i + 1}`}
-                  className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 {steps.length > 1 && <button onClick={() => removeStep(i)} className="text-gray-300 hover:text-red-400 transition-colors text-lg leading-none" aria-label="Remove step">×</button>}
               </li>
             ))}
@@ -560,7 +576,9 @@ function BuildForm() {
 
           {/* Tone */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 mb-2">Writing style</p>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              Writing style <span className="font-normal text-gray-400">(optional)</span>
+            </p>
             <div className="flex gap-2">
               {TONE_OPTIONS.map((t) => (
                 <button key={t.id} onClick={() => setTone(t.id)}
@@ -588,13 +606,15 @@ function BuildForm() {
         <div className="flex-1 min-w-0 px-6 py-6 flex flex-col gap-6 overflow-y-auto">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-1">3 · Output</p>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Ideal output & test result</h2>
-            <p className="text-xs text-gray-400 mt-0.5">Define what the agent should produce, then see the test result here.</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Ideal output & test result</h2>
+            <p className="text-sm text-gray-400 mt-0.5">Define what the agent should produce, then see the test result here.</p>
           </div>
 
           {/* Output type chips */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 mb-2">Output type</p>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              Output type <span className="text-red-500">*</span>
+            </p>
             <div className="flex flex-wrap gap-2">
               {OUTPUT_CHIPS.map((chip) => (
                 <button key={chip.id} onClick={() => toggleOutput(chip.id)}
@@ -607,9 +627,8 @@ function BuildForm() {
 
           {/* Ideal outputs per example */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 mb-2">
-              Ideal outputs{" "}
-              <span className="font-normal text-gray-400">— one per example, leave blank to follow company policy</span>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              Ideal outputs <span className="font-normal text-gray-400">(optional) — one per example, leave blank to follow company policy</span>
             </p>
             <div className="space-y-3">
               {localExamples.map((ex, i) => (
@@ -645,8 +664,8 @@ function BuildForm() {
 
           {/* Upload example output */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 mb-2">
-              Reference output file <span className="font-normal text-gray-400">— upload a real doc as style reference</span>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              Reference output file <span className="font-normal text-gray-400">(optional) — upload a real doc as style reference</span>
             </p>
             <input type="file" accept=".txt" className="hidden" id="output-file-upload"
               onChange={(e) => {

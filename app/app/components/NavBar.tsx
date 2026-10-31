@@ -7,7 +7,7 @@ import { useAgent } from "../context/AgentContext";
 import { useTheme } from "../context/ThemeContext";
 
 const steps = [
-  { label: "Define", href: "/define", step: 1 },
+  { label: "Build", href: "/build", step: 1 },
   { label: "Test", href: "/test", step: 2 },
   { label: "Improve", href: "/improve", step: 3 },
 ];
@@ -61,8 +61,14 @@ function ThemeToggle() {
 
 export default function NavBar() {
   const pathname = usePathname();
-  const { maxStep: storedMaxStep } = useAgent();
-  const maxStep = useHydrated() ? storedMaxStep : 0;
+  const { maxStep } = useAgent();
+  const hydrated = useHydrated();
+
+  // Hide the builder NavBar entirely on operator run pages — /run/* has its own layout
+  if (pathname.startsWith("/run/")) return null;
+
+  // Use maxStep=0 until hydrated — keeps SSR and first client render identical.
+  const effectiveMaxStep = hydrated ? maxStep : 0;
 
   const activeStep =
     steps.find((s) => pathname.startsWith(s.href))?.step ?? 0;
@@ -82,8 +88,8 @@ export default function NavBar() {
         <nav className="flex items-center gap-2" aria-label="Progress">
           {steps.map((s, i) => {
             const isActive = s.step === activeStep;
-            const isDone = maxStep >= s.step && !isActive;
-            const isAccessible = s.step <= maxStep + 1;
+            const isDone = effectiveMaxStep >= s.step && !isActive;
+            const isAccessible = s.step <= effectiveMaxStep + 1;
 
             const stepContent = (
               <>
@@ -107,7 +113,7 @@ export default function NavBar() {
                 {i > 0 && (
                   <div
                     className={`h-px w-8 ${
-                      maxStep >= s.step ? "bg-structural" : "bg-border-subtle"
+                      effectiveMaxStep >= s.step ? "bg-structural" : "bg-border-subtle"
                     }`}
                   />
                 )}
