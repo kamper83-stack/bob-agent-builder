@@ -7,7 +7,7 @@
  * maxStep: 0 = home, 1 = build done, 2 = run done, 3 = improve done
  */
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 export interface AgentExample {
   input: string;
@@ -103,34 +103,42 @@ const AgentContext = createContext<AgentContextValue>({
   mounted: false,
 });
 
+function readLocalStorage<T>(key: string, fallback: T): T {
+  if (typeof window === "undefined") return fallback;
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export function AgentProvider({ children }: { children: React.ReactNode }) {
-  // Always start with defaults (matches SSR) — hydrate from localStorage after mount
-  const [agentDef, setAgentDefState] = useState<AgentDef>(DEFAULT_DEF);
+  // Lazy initialisers read localStorage only on the client — the SSR path
+  // returns the same defaults as before, so there is no hydration mismatch.
+  // `mounted` is true immediately on the client, false during SSR.
+  const [agentDef, setAgentDefState] = useState<AgentDef>(
+    () => readLocalStorage<AgentDef>(STORAGE_KEY, DEFAULT_DEF)
+  );
   const [agentName, setAgentName] = useState("");
   const [examples, setExamples] = useState<AgentExample[]>([]);
   const [uploadedDoc, setUploadedDoc] = useState<UploadedDoc | null>(null);
   const [processSteps, setProcessSteps] = useState<string[]>([]);
   const [runResult, setRunResult] = useState<RunResult | null>(null);
-  const [maxStep, setMaxStepState] = useState<number>(0);
-  const [savedAgents, setSavedAgents] = useState<SavedAgent[]>([]);
-  const [mounted, setMounted] = useState(false);
-
-  // Load persisted state after first client render (avoids SSR/client mismatch)
-  useEffect(() => {
-    try {
-      const storedDef = localStorage.getItem(STORAGE_KEY);
-      if (storedDef) setAgentDefState(JSON.parse(storedDef) as AgentDef);
-    } catch {}
-    try {
-      const storedStep = localStorage.getItem(MAX_STEP_KEY);
-      if (storedStep) setMaxStepState(parseInt(storedStep, 10));
-    } catch {}
-    try {
-      const storedAgents = localStorage.getItem(AGENTS_KEY);
-      if (storedAgents) setSavedAgents(JSON.parse(storedAgents) as SavedAgent[]);
-    } catch {}
-    setMounted(true);
-  }, []);
+  const [maxStep, setMaxStepState] = useState<number>(
+    () => {
+      if (typeof window === "undefined") return 0;
+      try {
+        const raw = localStorage.getItem(MAX_STEP_KEY);
+        return raw ? parseInt(raw, 10) : 0;
+      } catch { return 0; }
+    }
+  );
+  const [savedAgents, setSavedAgents] = useState<SavedAgent[]>(
+    () => readLocalStorage<SavedAgent[]>(AGENTS_KEY, [])
+  );
+  // mounted=true on client (lazy initializer), false on server
+  const [mounted] = useState(() => typeof window !== "undefined");
 
   function setAgentDef(patch: Partial<AgentDef>) {
     setAgentDefState((prev) => {
