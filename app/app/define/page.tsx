@@ -32,7 +32,7 @@ export default function DefinePage() {
       inputType,
       outputType,
       policyDocId,
-      agentInstructions: buildInstructions(inputType, outputType),
+      agentInstructions: buildInstructions(inputType, outputType) + (agentDef.refinements ?? ""),
     });
     setMaxStep(1);
     router.push("/test");

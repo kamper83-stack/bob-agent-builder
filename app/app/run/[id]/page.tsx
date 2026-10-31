@@ -1,19 +1,27 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState, useRef, Suspense } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useAgent } from "../../context/AgentContext";
+import { apiErrorMessage } from "../../lib/apiError";
 
 function RunPageInner() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
 
-  const { savedAgents, agentDef, processSteps, uploadedDoc, setRunResult, setMaxStep } = useAgent();
+  const { savedAgents, agentDef, processSteps, uploadedDoc, setRunResult, setMaxStep, loadAgent, currentAgentId } = useAgent();
 
   // Find the saved agent to display its name
   const savedAgent = savedAgents.find((a) => a.id === id);
   const displayName = savedAgent?.name ?? "Agent";
+
+  // A direct link or reload must also select this agent, so Improve updates it
+  const needsLoad = Boolean(savedAgent) && currentAgentId !== id;
+  useEffect(() => {
+    if (needsLoad) loadAgent(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [needsLoad, id]);
 
   // Use the loaded agent's state (already loaded by home page via loadAgent)
   const agent = savedAgent ?? null;
@@ -73,7 +81,7 @@ function RunPageInner() {
         }),
       });
 
-      if (!res.ok) throw new Error(`API error ${res.status}: ${await res.text()}`);
+      if (!res.ok) throw new Error(await apiErrorMessage(res));
       const data = await res.json();
       setResult(data);
       setRunResult({ ...data, complaint_text: inputText });
@@ -147,7 +155,7 @@ function RunPageInner() {
           />
 
           {/* File upload */}
-          <input ref={fileInputRef} type="file" accept=".txt,.pdf,.docx" className="hidden" onChange={handleInputFileChange} />
+          <input ref={fileInputRef} type="file" accept=".txt" className="hidden" onChange={handleInputFileChange} />
           {uploadedInput ? (
             <div className="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20 px-4 py-3">
               <div className="flex items-center gap-2 min-w-0">

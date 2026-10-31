@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAgent } from "../context/AgentContext";
+import { apiErrorMessage } from "../lib/apiError";
 
 export default function ProcessPage() {
   const router = useRouter();
@@ -35,10 +36,7 @@ export default function ProcessPage() {
           policy_doc_id: agentDef.policyDocId,
         }),
       });
-      if (!res.ok) {
-        const body = await res.text();
-        throw new Error(`API error ${res.status}: ${body}`);
-      }
+      if (!res.ok) throw new Error(await apiErrorMessage(res));
       const data = await res.json();
       setSteps(data.steps);
     } catch (err) {

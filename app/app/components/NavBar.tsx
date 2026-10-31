@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSyncExternalStore } from "react";
 import { useAgent } from "../context/AgentContext";
 import { useTheme } from "../context/ThemeContext";
 
@@ -11,11 +12,19 @@ const steps = [
   { label: "Improve", href: "/improve", step: 3 },
 ];
 
+// NavBar sits inside a Suspense boundary, so it can hydrate after the providers
+// have already read localStorage. This stays false during its own hydration.
+const noopSubscribe = () => () => {};
+function useHydrated() {
+  return useSyncExternalStore(noopSubscribe, () => true, () => false);
+}
+
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
+  const hydrated = useHydrated();
 
   // Render a placeholder until client has hydrated — avoids server/client mismatch
-  if (resolvedTheme === null) {
+  if (!hydrated || resolvedTheme === null) {
     return <div className="ml-4 h-8 w-8 shrink-0" aria-hidden="true" />;
   }
 
@@ -52,7 +61,8 @@ function ThemeToggle() {
 
 export default function NavBar() {
   const pathname = usePathname();
-  const { maxStep } = useAgent();
+  const { maxStep: storedMaxStep } = useAgent();
+  const maxStep = useHydrated() ? storedMaxStep : 0;
 
   const activeStep =
     steps.find((s) => pathname.startsWith(s.href))?.step ?? 0;

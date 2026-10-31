@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAgent } from "../context/AgentContext";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -26,6 +27,21 @@ interface McpServer {
 
 function makeId(): string {
   return Math.random().toString(36).slice(2, 9);
+}
+
+const SETTINGS_KEY = "agent-studio:settings";
+
+/** API keys are never persisted, including ones saved by earlier versions. */
+function loadSettings(): { connectors: Connector[]; mcpServers: McpServer[] } {
+  try {
+    const stored = JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? "{}");
+    return {
+      connectors: ((stored.connectors ?? []) as Connector[]).map((c) => ({ ...c, apiKey: "" })),
+      mcpServers: (stored.mcpServers ?? []) as McpServer[],
+    };
+  } catch {
+    return { connectors: [], mcpServers: [] };
+  }
 }
 
 const CONNECTOR_TYPES: { value: Connector["type"]; label: string }[] = [
@@ -132,7 +148,7 @@ function ConnectorRow({
           type="password"
           value={connector.apiKey}
           onChange={(e) => onChange({ apiKey: e.target.value })}
-          placeholder="Stored in your environment — never sent to the server"
+          placeholder="Not saved — enter it again after a reload"
           className="w-full rounded-md border border-border-subtle bg-canvas px-3 py-1.5 text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-structural"
         />
       </div>
@@ -227,8 +243,14 @@ function McpRow({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
-  const [connectors, setConnectors] = useState<Connector[]>([]);
-  const [mcpServers, setMcpServers] = useState<McpServer[]>([]);
+  const { mounted } = useAgent();
+  // localStorage is only readable after mount
+  return mounted ? <SettingsForm /> : null;
+}
+
+function SettingsForm() {
+  const [connectors, setConnectors] = useState<Connector[]>(() => loadSettings().connectors);
+  const [mcpServers, setMcpServers] = useState<McpServer[]>(() => loadSettings().mcpServers);
   const [saved, setSaved] = useState(false);
 
   // ── Connector helpers ───────────────────────────────────────────────────────
@@ -274,8 +296,8 @@ export default function SettingsPage() {
   function handleSave() {
     try {
       localStorage.setItem(
-        "agent-studio:settings",
-        JSON.stringify({ connectors, mcpServers })
+        SETTINGS_KEY,
+        JSON.stringify({ connectors: connectors.map((c) => ({ ...c, apiKey: "" })), mcpServers })
       );
     } catch {}
     setSaved(true);

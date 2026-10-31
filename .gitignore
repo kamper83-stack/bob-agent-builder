@@ -6,3 +6,9 @@
 # Google Calendar OAuth — token and credentials files
 src/credentials.json
 src/token.json
+
+# Generated files
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store

@@ -33,8 +33,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // Here we only sync React state to match — no DOM manipulation needed on mount.
     const stored = (localStorage.getItem(STORAGE_KEY) as Theme | null) ?? "system";
     const resolved = stored === "system" ? getSystemTheme() : stored;
+    /* eslint-disable react-hooks/set-state-in-effect -- localStorage can only be read after hydration */
     setThemeState(stored);
     setResolvedTheme(resolved);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   function setTheme(t: Theme) {

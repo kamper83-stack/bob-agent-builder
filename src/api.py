@@ -3,21 +3,27 @@ api.py
 ------
 FastAPI backend for Agent Studio.
 
-Exposes two endpoints consumed by the Next.js API proxy routes:
+Exposes the endpoints consumed by the Next.js API proxy routes:
 
-  POST /run     — run the complaint-handler agent
-  POST /improve — generate an improvement suggestion
+  POST /run                 — run the complaint-handler agent
+  POST /improve             — generate an improvement suggestion
+  POST /extract-process     — list the steps the agent will take
+  POST /check-example       — check an example output against policy
+  POST /estimate-confidence — decide whether to ask a clarifying question
 
 Start:
     uvicorn src.api:app --reload
 
 Required env vars (see src/.env.example):
     GEMINI_API_KEY
-    GEMINI_MODEL  (optional — defaults to gemini-1.5-flash)
+    GEMINI_MODEL  (optional — defaults to gemini-flash-latest)
 """
 
-from fastapi import FastAPI, HTTPException
+import logging
+
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from src.agent_runner import run_agent_by_policy_id
@@ -25,6 +31,8 @@ from src.improvement_engine import suggest_improvement
 from src.process_extractor import extract_process
 from src.mock_policy_store import get_policy
 from src.example_checker import check_example_output, estimate_confidence
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Agent Studio API", version="0.1.0")
 
@@ -35,6 +43,16 @@ app.add_middleware(
     allow_methods=["POST"],
     allow_headers=["Content-Type"],
 )
+
+
+@app.exception_handler(Exception)
+async def handle_unexpected_error(request: Request, exc: Exception) -> JSONResponse:
+    """Model and configuration failures reach the client as JSON, without internals."""
+    logger.exception("Unhandled error on %s", request.url.path)
+    return JSONResponse(
+        status_code=502,
+        content={"detail": "The AI service failed. Please try again."},
+    )
 
 
 # ── /run ──────────────────────────────────────────────────────────────────────
