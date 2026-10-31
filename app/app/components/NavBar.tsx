@@ -52,7 +52,11 @@ function ThemeToggle() {
 
 export default function NavBar() {
   const pathname = usePathname();
-  const { maxStep } = useAgent();
+  const { maxStep, mounted } = useAgent();
+
+  // Use maxStep=0 until localStorage has been read — keeps SSR and first
+  // client render identical, avoiding the hydration mismatch warning.
+  const effectiveMaxStep = mounted ? maxStep : 0;
 
   const activeStep =
     steps.find((s) => pathname.startsWith(s.href))?.step ?? 0;
@@ -72,8 +76,8 @@ export default function NavBar() {
         <nav className="flex items-center gap-2" aria-label="Progress">
           {steps.map((s, i) => {
             const isActive = s.step === activeStep;
-            const isDone = maxStep >= s.step && !isActive;
-            const isAccessible = s.step <= maxStep + 1;
+            const isDone = effectiveMaxStep >= s.step && !isActive;
+            const isAccessible = s.step <= effectiveMaxStep + 1;
 
             const stepContent = (
               <>
@@ -97,7 +101,7 @@ export default function NavBar() {
                 {i > 0 && (
                   <div
                     className={`h-px w-8 ${
-                      maxStep >= s.step ? "bg-structural" : "bg-border-subtle"
+                      effectiveMaxStep >= s.step ? "bg-structural" : "bg-border-subtle"
                     }`}
                   />
                 )}
