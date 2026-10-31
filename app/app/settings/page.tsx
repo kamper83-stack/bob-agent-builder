@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useAgent } from "../context/AgentContext";
 
@@ -369,6 +370,20 @@ function SettingsForm() {
           >
             + Add MCP server
           </button>
+        </section>
+
+        {/* ── Logs ───────────────────────────────────────────────────────────── */}
+        <section>
+          <SectionHeader
+            title="Logs"
+            description="Recent backend activity and errors. Useful when something fails."
+          />
+          <Link
+            href="/settings/logs"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border-strong px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-canvas transition-colors"
+          >
+            View logs →
+          </Link>
         </section>
 
         {/* ── Save ───────────────────────────────────────────────────────────── */}

@@ -11,13 +11,22 @@ export async function proxyToBackend(req: NextRequest, path: string) {
     return NextResponse.json({ detail: "Invalid JSON body" }, { status: 400 });
   }
 
+  return forward(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+/** Forwards a GET to the backend, with the same error shape as `proxyToBackend`. */
+export function proxyGetToBackend(path: string) {
+  return forward(path, { cache: "no-store" });
+}
+
+async function forward(path: string, init: RequestInit) {
   let res: Response;
   try {
-    res = await fetch(`${BACKEND}${path}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    res = await fetch(`${BACKEND}${path}`, init);
   } catch {
     return NextResponse.json(
       { detail: "The backend is not reachable. Check that it is running." },

@@ -10,6 +10,7 @@ Exposes the endpoints consumed by the Next.js API proxy routes:
   POST /extract-process     — list the steps the agent will take
   POST /check-example       — check an example output against policy
   POST /estimate-confidence — decide whether to ask a clarifying question
+  GET  /logs                — recent backend log entries, newest first
 
 Start:
     uvicorn src.api:app --reload
@@ -20,12 +21,15 @@ Required env vars (see src/.env.example):
 """
 
 import logging
+import time
+from collections.abc import Awaitable, Callable
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
+from src import event_log
 from src.agent_runner import run_agent_by_policy_id
 from src.improvement_engine import suggest_improvement
 from src.process_extractor import extract_process
@@ -33,6 +37,7 @@ from src.mock_policy_store import get_policy
 from src.example_checker import check_example_output, estimate_confidence
 
 logger = logging.getLogger(__name__)
+event_log.install(logging.getLogger("src"))
 
 app = FastAPI(title="Agent Studio API", version="0.1.0")
 
@@ -48,11 +53,50 @@ app.add_middleware(
 @app.exception_handler(Exception)
 async def handle_unexpected_error(request: Request, exc: Exception) -> JSONResponse:
     """Model and configuration failures reach the client as JSON, without internals."""
-    logger.exception("Unhandled error on %s", request.url.path)
+    logger.exception("Unhandled %s on %s", type(exc).__name__, request.url.path)
     return JSONResponse(
         status_code=502,
         content={"detail": "The AI service failed. Please try again."},
     )
+
+
+@app.middleware("http")
+async def log_requests(
+    request: Request, call_next: Callable[[Request], Awaitable[Response]]
+) -> Response:
+    """Logs method, path, status and duration. Request bodies are never logged."""
+    started = time.perf_counter()
+    response = await call_next(request)
+    if request.url.path != "/logs":  # The Logs page would otherwise fill its own list
+        elapsed_ms = round((time.perf_counter() - started) * 1000)
+        level = (
+            logging.ERROR if response.status_code >= 500
+            else logging.WARNING if response.status_code >= 400
+            else logging.INFO
+        )
+        logger.log(
+            level, "%s %s returned %d in %d ms",
+            request.method, request.url.path, response.status_code, elapsed_ms,
+        )
+    return response
+
+
+# ── /logs ─────────────────────────────────────────────────────────────────────
+
+class LogEntryResponse(BaseModel):
+    timestamp: str
+    level: str
+    message: str
+
+
+class LogsResponse(BaseModel):
+    entries: list[LogEntryResponse]
+
+
+@app.get("/logs", response_model=LogsResponse)
+def get_logs() -> LogsResponse:
+    """Return recent backend log entries, newest first."""
+    return LogsResponse(entries=event_log.memory_handler.recent())
 
 
 # ── /run ──────────────────────────────────────────────────────────────────────
