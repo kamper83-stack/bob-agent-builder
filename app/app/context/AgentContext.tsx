@@ -7,7 +7,7 @@
  * maxStep: 0 = home, 1 = build done, 2 = run done, 3 = improve done
  */
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 export interface AgentExample {
   input: string;
@@ -24,6 +24,17 @@ export interface AgentDef {
   outputType: string;
   policyDocId: string;
   agentInstructions: string;
+  /** Writing style chosen on the Build screen */
+  tone?: string;
+  /** Accepted improvements and clarifications; survive instruction rebuilds */
+  refinements?: string;
+}
+
+/** The parts of an agent that the Build screen commits together */
+export interface AgentSnapshot {
+  agentDef: AgentDef;
+  processSteps: string[];
+  examples: AgentExample[];
 }
 
 export interface RunResult {
@@ -62,9 +73,14 @@ interface AgentContextValue {
 
   // Saved agents list
   savedAgents: SavedAgent[];
-  saveAgent: () => string;    // saves current state, returns the agent id
+  saveAgent: (snapshot: AgentSnapshot) => string;    // creates or updates, returns the agent id
   loadAgent: (id: string) => void;
   deleteAgent: (id: string) => void;
+  resetBuilder: () => void;
+  /** Id of the saved agent being edited, null for a new agent */
+  currentAgentId: string | null;
+  /** Changes when a different agent is opened, so the Build form remounts */
+  builderKey: number;
 
   /** true once localStorage has been read — use to suppress flash of wrong content */
   mounted: boolean;
@@ -80,6 +96,7 @@ const DEFAULT_DEF: AgentDef = {
 const STORAGE_KEY = "agent-studio:agentDef";
 const MAX_STEP_KEY = "agent-studio:maxStep";
 const AGENTS_KEY  = "agent-studio:savedAgents";
+const DRAFT_KEY   = "agent-studio:draft";
 
 const AgentContext = createContext<AgentContextValue>({
   agentDef: DEFAULT_DEF,
@@ -100,45 +117,62 @@ const AgentContext = createContext<AgentContextValue>({
   saveAgent: () => "",
   loadAgent: () => {},
   deleteAgent: () => {},
+  resetBuilder: () => {},
+  currentAgentId: null,
+  builderKey: 0,
   mounted: false,
 });
 
-function readLocalStorage<T>(key: string, fallback: T): T {
-  if (typeof window === "undefined") return fallback;
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
 export function AgentProvider({ children }: { children: React.ReactNode }) {
-  // Lazy initialisers read localStorage only on the client — the SSR path
-  // returns the same defaults as before, so there is no hydration mismatch.
-  // `mounted` is true immediately on the client, false during SSR.
-  const [agentDef, setAgentDefState] = useState<AgentDef>(
-    () => readLocalStorage<AgentDef>(STORAGE_KEY, DEFAULT_DEF)
-  );
+  // Always start with defaults (matches SSR) — hydrate from localStorage after mount
+  const [agentDef, setAgentDefState] = useState<AgentDef>(DEFAULT_DEF);
   const [agentName, setAgentName] = useState("");
   const [examples, setExamples] = useState<AgentExample[]>([]);
   const [uploadedDoc, setUploadedDoc] = useState<UploadedDoc | null>(null);
   const [processSteps, setProcessSteps] = useState<string[]>([]);
   const [runResult, setRunResult] = useState<RunResult | null>(null);
-  const [maxStep, setMaxStepState] = useState<number>(
-    () => {
-      if (typeof window === "undefined") return 0;
-      try {
-        const raw = localStorage.getItem(MAX_STEP_KEY);
-        return raw ? parseInt(raw, 10) : 0;
-      } catch { return 0; }
-    }
-  );
-  const [savedAgents, setSavedAgents] = useState<SavedAgent[]>(
-    () => readLocalStorage<SavedAgent[]>(AGENTS_KEY, [])
-  );
-  // mounted=true on client (lazy initializer), false on server
-  const [mounted] = useState(() => typeof window !== "undefined");
+  const [maxStep, setMaxStepState] = useState<number>(0);
+  const [savedAgents, setSavedAgents] = useState<SavedAgent[]>([]);
+  const [currentAgentId, setCurrentAgentId] = useState<string | null>(null);
+  const [builderKey, setBuilderKey] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  // Load persisted state after first client render (avoids SSR/client mismatch)
+  useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect -- localStorage can only be read after hydration */
+    try {
+      const storedDef = localStorage.getItem(STORAGE_KEY);
+      if (storedDef) setAgentDefState({ ...DEFAULT_DEF, ...(JSON.parse(storedDef) as AgentDef) });
+    } catch {}
+    try {
+      const storedStep = localStorage.getItem(MAX_STEP_KEY);
+      if (storedStep) setMaxStepState(parseInt(storedStep, 10));
+    } catch {}
+    try {
+      const storedAgents = localStorage.getItem(AGENTS_KEY);
+      if (storedAgents) setSavedAgents(JSON.parse(storedAgents) as SavedAgent[]);
+    } catch {}
+    try {
+      const storedDraft = localStorage.getItem(DRAFT_KEY);
+      if (storedDraft) {
+        const draft = JSON.parse(storedDraft);
+        setAgentName(draft.agentName ?? "");
+        setExamples(draft.examples ?? []);
+        setProcessSteps(draft.processSteps ?? []);
+        setCurrentAgentId(draft.currentAgentId ?? null);
+      }
+    } catch {}
+    setMounted(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, []);
+
+  // Keep the agent under construction across reloads
+  useEffect(() => {
+    if (!mounted) return;
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ agentName, examples, processSteps, currentAgentId }));
+    } catch {}
+  }, [mounted, agentName, examples, processSteps, currentAgentId]);
 
   function setAgentDef(patch: Partial<AgentDef>) {
     setAgentDefState((prev) => {
@@ -156,14 +190,12 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
     });
   }
 
-  function saveAgent(): string {
-    const id = Date.now().toString(36);
+  function saveAgent(snapshot: AgentSnapshot): string {
+    const id = currentAgentId ?? Date.now().toString(36);
     const agent: SavedAgent = {
       id,
       name: agentName.trim() || `Agent ${savedAgents.length + 1}`,
-      agentDef,
-      processSteps,
-      examples,
+      ...snapshot,
       uploadedDoc,
       savedAt: new Date().toISOString(),
     };
@@ -172,17 +204,39 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
       try { localStorage.setItem(AGENTS_KEY, JSON.stringify(next)); } catch {}
       return next;
     });
+    setCurrentAgentId(id);
     return id;
   }
 
   function loadAgent(id: string) {
     const agent = savedAgents.find((a) => a.id === id);
     if (!agent) return;
-    setAgentDefState(agent.agentDef);
+    // Use setAgentDefState (full replace + defaults) instead of setAgentDef (patch)
+    // so that old saved agents missing optional fields (tone, refinements) get defaults.
+    const loadedDef = { ...DEFAULT_DEF, ...agent.agentDef };
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(loadedDef)); } catch {}
+    setAgentDefState(loadedDef);
     setAgentName(agent.name);
     setExamples(agent.examples);
     setUploadedDoc(agent.uploadedDoc);
     setProcessSteps(agent.processSteps);
+    setRunResult(null);
+    setCurrentAgentId(id);
+    setBuilderKey((k) => k + 1);
+  }
+
+  function resetBuilder() {
+    // Full replace, not a patch — ensures all optional fields are cleared.
+    const clearedDef = { ...DEFAULT_DEF };
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(clearedDef)); } catch {}
+    setAgentDefState(clearedDef);
+    setAgentName("");
+    setExamples([]);
+    setUploadedDoc(null);
+    setProcessSteps([]);
+    setRunResult(null);
+    setCurrentAgentId(null);
+    setBuilderKey((k) => k + 1);
   }
 
   function deleteAgent(id: string) {
@@ -202,7 +256,8 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
       processSteps, setProcessSteps,
       runResult, setRunResult,
       maxStep, setMaxStep,
-      savedAgents, saveAgent, loadAgent, deleteAgent,
+      savedAgents, saveAgent, loadAgent, deleteAgent, resetBuilder,
+      currentAgentId, builderKey,
       mounted,
     }}>
       {children}

@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useRef } from "react";
-import { useAgent, type AgentExample, type UploadedDoc } from "../context/AgentContext";
+import { useAgent, type AgentDef, type AgentExample } from "../context/AgentContext";
+import { apiErrorMessage } from "../lib/apiError";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -39,10 +40,15 @@ function buildInstructions(
   outputChips: string[],
   tone: string,
   examples: AgentExample[],
+  steps: string[],
 ): string {
   const outputs = outputChips.join(", ") || "a helpful response";
   const toneStr = tone === "formal" ? "formal and professional"
     : tone === "friendly" ? "friendly and warm" : "natural";
+
+  const stepsBlock = steps.length > 0
+    ? "\n\nFollow these steps in order:\n" + steps.map((s, i) => `${i + 1}. ${s}`).join("\n")
+    : "";
 
   const filledExamples = examples.filter((e) => e.input.trim() && e.output.trim());
   const examplesBlock = filledExamples.length > 0
@@ -59,6 +65,7 @@ function buildInstructions(
     `You will receive: ${inputDesc || "user input"}. ` +
     `Produce: ${outputs}. Tone: ${toneStr}. ` +
     `Follow the provided company policy document.` +
+    stepsBlock +
     examplesBlock
   );
 }
@@ -66,6 +73,17 @@ function buildInstructions(
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function BuildPage() {
+  const { mounted, builderKey } = useAgent();
+
+  // The form seeds its state from the context, which only has the persisted
+  // agent after mount. The key remounts it when a different agent is opened.
+  if (!mounted) {
+    return <div className="flex-1 m-6 rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse" />;
+  }
+  return <BuildForm key={builderKey} />;
+}
+
+function BuildForm() {
   const router = useRouter();
   const {
     agentDef, setAgentDef,
@@ -80,7 +98,7 @@ export default function BuildPage() {
   // ── Column 1 state ────────────────────────────────────────────────────────
   const [inputDesc, setInputDesc]   = useState(agentDef.inputType);
   const [policyDocId, setPolicyDocId] = useState(agentDef.policyDocId);
-  const [tone, setTone]             = useState("formal");
+  const [tone, setTone]             = useState(agentDef.tone ?? "formal");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [localExamples, setLocalExamples] = useState<AgentExample[]>(
@@ -208,7 +226,7 @@ export default function BuildPage() {
           ...(uploadedDoc ? { policy_text_override: uploadedDoc.text } : {}),
         }),
       });
-      if (!res.ok) throw new Error(`API error ${res.status}`);
+      if (!res.ok) throw new Error(await apiErrorMessage(res));
       const data = await res.json();
       setSteps(data.steps);
     } catch (err) {
@@ -229,14 +247,19 @@ export default function BuildPage() {
   // ── Commit current state to context ──────────────────────────────────────
 
   function commitState(extraInstruction = "") {
-    setExamples(localExamples);
-    setAgentDef({
+    const refinements = (agentDef.refinements ?? "") + extraInstruction;
+    const nextDef: AgentDef = {
       inputType: inputDesc,
       outputType: selectedOutputs.join(", "),
       policyDocId: uploadedDoc ? "__uploaded__" : policyDocId,
-      agentInstructions: buildInstructions(inputDesc, selectedOutputs, tone, localExamples) + extraInstruction,
-    });
+      tone,
+      refinements,
+      agentInstructions: buildInstructions(inputDesc, selectedOutputs, tone, localExamples, filledSteps) + refinements,
+    };
+    setExamples(localExamples);
+    setAgentDef(nextDef);
     setProcessSteps(filledSteps);
+    return { agentDef: nextDef, processSteps: filledSteps, examples: localExamples };
   }
 
   // ── Test run ──────────────────────────────────────────────────────────────
@@ -272,11 +295,10 @@ export default function BuildPage() {
   }
 
   async function doTest(extraInstruction = "") {
-    commitState(extraInstruction);
+    const { agentDef: committedDef } = commitState(extraInstruction);
     setTestRunning(true);
     setTestError(null);
     setTestResult(null);
-    const instructions = buildInstructions(inputDesc, selectedOutputs, tone, localExamples) + extraInstruction;
     try {
       const res = await fetch("/api/run", {
         method: "POST",
@@ -284,11 +306,11 @@ export default function BuildPage() {
         body: JSON.stringify({
           complaint_text: testInput,
           policy_doc_id: uploadedDoc ? "service_policy" : policyDocId,
-          agent_instructions: instructions,
+          agent_instructions: committedDef.agentInstructions,
           ...(uploadedDoc ? { policy_text_override: uploadedDoc.text } : {}),
         }),
       });
-      if (!res.ok) throw new Error(`API error ${res.status}: ${await res.text()}`);
+      if (!res.ok) throw new Error(await apiErrorMessage(res));
       const data = await res.json();
       setTestResult(data);
       setRunResult({ ...data, complaint_text: testInput });
@@ -306,8 +328,7 @@ export default function BuildPage() {
   // ── Save agent ────────────────────────────────────────────────────────────
 
   function handleSave() {
-    commitState();
-    saveAgent();
+    saveAgent(commitState());
     setSaved(true);
   }
 
@@ -345,7 +366,7 @@ export default function BuildPage() {
         </button>
         <button
           onClick={handleTest}
-          disabled={!canTest || hasBlockingConflict || checkingConfidence}
+          disabled={!canTest || hasBlockingConflict || checkingConfidence || testRunning}
           className="rounded-full bg-gray-900 dark:bg-gray-100 px-5 py-1.5 text-sm font-semibold text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           {testRunning ? "Running…" : checkingConfidence ? "Checking…" : "▶ Run test"}
@@ -513,7 +534,7 @@ export default function BuildPage() {
                   <span className="ml-auto text-xs text-gray-400">PDF</span>
                 </label>
               ))}
-              <input ref={fileInputRef} type="file" accept=".pdf,.docx,.txt" className="hidden" onChange={handlePolicyFileChange} />
+              <input ref={fileInputRef} type="file" accept=".txt" className="hidden" onChange={handlePolicyFileChange} />
               {uploadedDoc ? (
                 <div className="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20 px-4 py-3">
                   <div className="flex items-center gap-2 min-w-0">
@@ -646,7 +667,7 @@ export default function BuildPage() {
             <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               Reference output file <span className="font-normal text-gray-400">(optional) — upload a real doc as style reference</span>
             </p>
-            <input type="file" accept=".pdf,.docx,.txt" className="hidden" id="output-file-upload"
+            <input type="file" accept=".txt" className="hidden" id="output-file-upload"
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "light" | "dark" | "system";
 
@@ -23,22 +23,26 @@ function getSystemTheme(): "light" | "dark" {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-function readStoredTheme(): { theme: Theme; resolvedTheme: "light" | "dark" | null } {
-  // Called only on the client (inside a useState lazy initializer).
-  // Returns null-resolved on the server to match SSR output.
-  if (typeof window === "undefined") return { theme: "system", resolvedTheme: null };
+function readStoredTheme(): { theme: Theme; resolvedTheme: "light" | "dark" } {
   const stored = (localStorage.getItem(STORAGE_KEY) as Theme | null) ?? "system";
   const resolved = stored === "system" ? getSystemTheme() : stored;
   return { theme: stored, resolvedTheme: resolved };
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Lazy initialisers run only on the client — SSR path returns "system"/null,
-  // which matches the server render, eliminating the hydration warning.
-  const [theme, setThemeState] = useState<Theme>(() => readStoredTheme().theme);
-  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark" | null>(
-    () => readStoredTheme().resolvedTheme
-  );
+  const [theme, setThemeState] = useState<Theme>("system");
+  // null until after first client paint — prevents server/client mismatch
+  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark" | null>(null);
+
+  useEffect(() => {
+    // The inline script in layout.tsx already applied the class before hydration.
+    // Here we only sync React state to match — no DOM manipulation needed on mount.
+    const { theme: storedTheme, resolvedTheme: storedResolved } = readStoredTheme();
+    /* eslint-disable react-hooks/set-state-in-effect -- localStorage can only be read after hydration */
+    setThemeState(storedTheme);
+    setResolvedTheme(storedResolved);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, []);
 
   function setTheme(t: Theme) {
     const resolved = t === "system" ? getSystemTheme() : t;

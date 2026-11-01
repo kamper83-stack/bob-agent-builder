@@ -3,6 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { useState, useRef, Suspense } from "react";
 import { useAgent } from "../../context/AgentContext";
+import { apiErrorMessage } from "../../lib/apiError";
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -90,7 +91,7 @@ function RunPageInner() {
         }),
       });
 
-      if (!res.ok) throw new Error(`API error ${res.status}: ${await res.text()}`);
+      if (!res.ok) throw new Error(await apiErrorMessage(res));
       const data = await res.json();
       setResult(data);
       setActiveStep(steps.length);
@@ -164,7 +165,7 @@ function RunPageInner() {
           />
 
           {/* File upload */}
-          <input ref={fileInputRef} type="file" accept=".txt,.pdf,.docx" className="hidden" onChange={handleInputFileChange} />
+          <input ref={fileInputRef} type="file" accept=".txt" className="hidden" onChange={handleInputFileChange} />
           {uploadedInput ? (
             <div className="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20 px-4 py-3">
               <div className="flex items-center gap-2 min-w-0">

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAgent } from "./context/AgentContext";
 
@@ -14,15 +13,10 @@ function formatDate(iso: string) {
 
 export default function Home() {
   const router = useRouter();
-  const { savedAgents, loadAgent, deleteAgent, setAgentDef, setAgentName, setExamples, setUploadedDoc, setProcessSteps, mounted } = useAgent();
+  const { savedAgents, loadAgent, deleteAgent, resetBuilder, mounted } = useAgent();
 
   function handleNew() {
-    // Reset the builder state
-    setAgentDef({ inputType: "", outputType: "", policyDocId: "service_policy", agentInstructions: "" });
-    setAgentName("");
-    setExamples([]);
-    setUploadedDoc(null);
-    setProcessSteps([]);
+    resetBuilder();
     router.push("/build");
   }
 
@@ -56,11 +50,21 @@ export default function Home() {
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">
       {/* Header */}
-      <div className="mb-10">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Agents</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Build, tune, and run AI agents grounded in company knowledge.
-        </p>
+      <div className="mb-10 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Agents</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Build, tune, and run AI agents grounded in company knowledge.
+          </p>
+        </div>
+        {savedAgents.length > 0 && (
+          <button
+            onClick={handleNew}
+            className="shrink-0 rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+          >
+            + New agent
+          </button>
+        )}
       </div>
 
       {/* Empty state */}

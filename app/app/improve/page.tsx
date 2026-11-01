@@ -3,12 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAgent } from "../context/AgentContext";
+import { apiErrorMessage } from "../lib/apiError";
 
 const STARS = [1, 2, 3, 4, 5];
 
 export default function ImprovePage() {
   const router = useRouter();
-  const { agentDef, setAgentDef, runResult, setMaxStep } = useAgent();
+  const { agentDef, setAgentDef, runResult, setMaxStep, processSteps, examples, currentAgentId, saveAgent } = useAgent();
 
   const [rating, setRating] = useState<number>(0);
   const [hovered, setHovered] = useState<number>(0);
@@ -40,10 +41,7 @@ export default function ImprovePage() {
         }
       );
 
-      if (!res.ok) {
-        const body = await res.text();
-        throw new Error(`API error ${res.status}: ${body}`);
-      }
+      if (!res.ok) throw new Error(await apiErrorMessage(res));
 
       const data = await res.json();
       setSuggestion(data.suggestion);
@@ -56,9 +54,19 @@ export default function ImprovePage() {
 
   function handleAccept() {
     if (!suggestion) return;
-    setAgentDef({
-      agentInstructions: agentDef.agentInstructions + "\n\n" + suggestion,
-    });
+    const addition = "\n\n" + suggestion;
+    const nextDef = {
+      ...agentDef,
+      agentInstructions: agentDef.agentInstructions + addition,
+      refinements: (agentDef.refinements ?? "") + addition,
+    };
+    // Capture a stable snapshot of processSteps and examples at the moment of
+    // accept — avoids a stale-closure issue if context re-renders between here
+    // and the saveAgent call.
+    const stepsSnapshot = processSteps.slice();
+    const examplesSnapshot = examples.slice();
+    setAgentDef(nextDef);
+    if (currentAgentId) saveAgent({ agentDef: nextDef, processSteps: stepsSnapshot, examples: examplesSnapshot });
     setMaxStep(3);
     setAccepted(true);
   }

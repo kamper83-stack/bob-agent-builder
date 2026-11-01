@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${ibmPlexSans.variable} h-full antialiased`}>
+    <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${ibmPlexSans.variable} h-full antialiased`}>
       {/*
         Inline script runs synchronously before React hydrates — reads the saved
         theme from localStorage and applies the class to <html> immediately so
@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Suspense fallback={<div className="h-14 border-b border-border-subtle bg-surface" />}>
               <NavBar />
             </Suspense>
-            <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
+            <main className="flex-1 flex flex-col overflow-y-auto">{children}</main>
           </AgentProvider>
         </ThemeProvider>
       </body>

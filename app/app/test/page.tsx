@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAgent } from "../context/AgentContext";
+import { apiErrorMessage } from "../lib/apiError";
 
 export default function TestPage() {
   const router = useRouter();
@@ -52,10 +53,7 @@ export default function TestPage() {
         }),
       });
 
-      if (!res.ok) {
-        const body = await res.text();
-        throw new Error(`API error ${res.status}: ${body}`);
-      }
+      if (!res.ok) throw new Error(await apiErrorMessage(res));
 
       const data = await res.json();
       setResult(data);
