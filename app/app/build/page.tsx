@@ -148,10 +148,17 @@ function BuildForm() {
   const clarificationAnswerRef = useRef<string>("");
 
   // ── Connector state (loaded live from Settings localStorage) ─────────────
-  const [connectors] = useState(() => loadConnectorsFromSettings());
-  const [enabledConnectors, setEnabledConnectors] = useState<Record<string, boolean>>(
-    () => Object.fromEntries(loadConnectorsFromSettings().map((c) => [c.id, true]))
-  );
+  // useEffect so the list refreshes when the user navigates back from Settings.
+  const [connectors, setConnectors] = useState<{ id: string; label: string; detail: string }[]>([]);
+  const [enabledConnectors, setEnabledConnectors] = useState<Record<string, boolean>>({});
+  useEffect(() => {
+    // localStorage is only readable client-side; read after mount and on each visit.
+    /* eslint-disable react-hooks/set-state-in-effect -- reading external store, not cascading */
+    const list = loadConnectorsFromSettings();
+    setConnectors(list);
+    setEnabledConnectors(Object.fromEntries(list.map((c) => [c.id, true])));
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, []);
   function toggleConnector(id: string) {
     setEnabledConnectors((prev) => ({ ...prev, [id]: !prev[id] }));
   }
@@ -174,6 +181,8 @@ function BuildForm() {
     if (testInput.trim().length > 0 && selectedOutputs.length > 0 && filledSteps.length > 0) {
       doTest();
     }
+    // doTest is intentionally omitted from deps: it is re-created on every render
+    // but this effect must only fire once when autoRunOnBuild flips to true.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoRunOnBuild]);
   const hasBlockingConflict = conflicts.some(
@@ -332,7 +341,9 @@ function BuildForm() {
     const extra = alreadyAnswered
       ? `\n\nUser clarification: ${clarificationAnswerRef.current}`
       : "";
-    doTest(extra);
+    // Pass the stored answer so doTest re-writes the refs on success,
+    // keeping them fresh even if doTest is ever called from another path.
+    doTest(extra, alreadyAnswered ? clarificationAnswerRef.current : undefined);
   }
 
   async function doTest(extraInstruction = "", answeredClarification?: string) {
@@ -438,9 +449,12 @@ function BuildForm() {
               <button
                 onClick={() => {
                   const ans = clarificationAnswer.trim();
+                  // Pass ans (may be empty string) as answeredClarification so the
+                  // refs are written and re-asking is skipped on subsequent runs.
+                  // Empty string is the sentinel for "user dismissed without answering".
                   doTest(
                     ans ? `\n\nUser clarification: ${ans}` : "",
-                    ans || "(skipped)",
+                    ans,
                   );
                 }}
                 className="flex-1 rounded-full bg-gray-900 dark:bg-gray-100 px-4 py-2 text-sm font-semibold text-white dark:text-gray-900 hover:bg-gray-700 transition-colors"
