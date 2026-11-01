@@ -84,6 +84,10 @@ interface AgentContextValue {
 
   /** true once localStorage has been read — use to suppress flash of wrong content */
   mounted: boolean;
+
+  /** When true, the Build page should trigger a test run immediately on mount. */
+  autoRunOnBuild: boolean;
+  setAutoRunOnBuild: (v: boolean) => void;
 }
 
 const DEFAULT_DEF: AgentDef = {
@@ -121,6 +125,8 @@ const AgentContext = createContext<AgentContextValue>({
   currentAgentId: null,
   builderKey: 0,
   mounted: false,
+  autoRunOnBuild: false,
+  setAutoRunOnBuild: () => {},
 });
 
 export function AgentProvider({ children }: { children: React.ReactNode }) {
@@ -136,6 +142,7 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   const [currentAgentId, setCurrentAgentId] = useState<string | null>(null);
   const [builderKey, setBuilderKey] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [autoRunOnBuild, setAutoRunOnBuild] = useState(false);
 
   // Load persisted state after first client render (avoids SSR/client mismatch)
   useEffect(() => {
@@ -259,6 +266,7 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
       savedAgents, saveAgent, loadAgent, deleteAgent, resetBuilder,
       currentAgentId, builderKey,
       mounted,
+      autoRunOnBuild, setAutoRunOnBuild,
     }}>
       {children}
     </AgentContext.Provider>

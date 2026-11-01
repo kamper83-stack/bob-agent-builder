@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useAgent } from "../context/AgentContext";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -272,7 +272,6 @@ function SettingsForm() {
   const [saved, setSaved] = useState(false);
   const [urlErrors, setUrlErrors] = useState<Record<string, string>>({});
   const [isDirty, setIsDirty] = useState(false);
-  const savedSnapshotRef = useRef(JSON.stringify({ connectors: loadSettings().connectors, mcpServers: loadSettings().mcpServers }));
 
   // Warn before navigating away with unsaved changes.
   useEffect(() => {
@@ -352,7 +351,6 @@ function SettingsForm() {
         JSON.stringify({ connectors: connectors.map((c) => ({ ...c, apiKey: "" })), mcpServers })
       );
     } catch {}
-    savedSnapshotRef.current = JSON.stringify({ connectors, mcpServers });
     setIsDirty(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);

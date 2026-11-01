@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAgent, type AgentDef, type AgentExample } from "../context/AgentContext";
 import { apiErrorMessage } from "../lib/apiError";
 
@@ -27,11 +27,21 @@ const TONE_OPTIONS = [
   { id: "mine", label: "My style" },
 ];
 
-const GCAL_EMAIL = process.env.NEXT_PUBLIC_GCAL_EMAIL || "calendar@company.co.il";
-const CONNECTORS = [
-  { id: "google_calendar", label: "Google Calendar", detail: `${GCAL_EMAIL} · connected` },
-  { id: "email_connector", label: "Email", detail: "smtp.company.co.il · connected" },
-];
+const SETTINGS_KEY = "agent-studio:settings";
+
+/** Read connectors saved in Settings from localStorage. Falls back to empty list. */
+function loadConnectorsFromSettings(): { id: string; label: string; detail: string }[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const stored = JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? "{}");
+    const connectors = (stored.connectors ?? []) as { id: string; name: string; url: string; enabled: boolean }[];
+    return connectors
+      .filter((c) => c.enabled && c.name.trim())
+      .map((c) => ({ id: c.id, label: c.name, detail: c.url || "connected" }));
+  } catch {
+    return [];
+  }
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -93,6 +103,7 @@ function BuildForm() {
     processSteps, setProcessSteps,
     setRunResult, setMaxStep,
     saveAgent,
+    autoRunOnBuild, setAutoRunOnBuild,
   } = useAgent();
 
   // ── Column 1 state ────────────────────────────────────────────────────────
@@ -136,10 +147,18 @@ function BuildForm() {
   const clarificationKeyRef = useRef<string>("");
   const clarificationAnswerRef = useRef<string>("");
 
-  // ── Connector toggle state ────────────────────────────────────────────────
-  const [enabledConnectors, setEnabledConnectors] = useState<Record<string, boolean>>(
-    () => Object.fromEntries(CONNECTORS.map((c) => [c.id, true]))
-  );
+  // ── Connector state (loaded live from Settings localStorage) ─────────────
+  // useEffect so the list refreshes when the user navigates back from Settings.
+  const [connectors, setConnectors] = useState<{ id: string; label: string; detail: string }[]>([]);
+  const [enabledConnectors, setEnabledConnectors] = useState<Record<string, boolean>>({});
+  useEffect(() => {
+    // localStorage is only readable client-side; read after mount and on each visit.
+    /* eslint-disable react-hooks/set-state-in-effect -- reading external store, not cascading */
+    const list = loadConnectorsFromSettings();
+    setConnectors(list);
+    setEnabledConnectors(Object.fromEntries(list.map((c) => [c.id, true])));
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, []);
   function toggleConnector(id: string) {
     setEnabledConnectors((prev) => ({ ...prev, [id]: !prev[id] }));
   }
@@ -150,6 +169,22 @@ function BuildForm() {
   // ── Derived ───────────────────────────────────────────────────────────────
   const filledSteps = steps.filter((s) => s.trim().length > 0);
   const canTest = inputDesc.trim().length > 0 && selectedOutputs.length > 0 && filledSteps.length > 0 && testInput.trim().length > 0;
+
+  // ── Auto-run after "Run agent again" from Improve page ───────────────────
+  // useRef guard prevents React StrictMode double-invocation from firing doTest twice.
+  const autoRunFiredRef = useRef(false);
+  useEffect(() => {
+    if (!autoRunOnBuild || autoRunFiredRef.current) return;
+    autoRunFiredRef.current = true;
+    setAutoRunOnBuild(false);
+    // Only auto-run if there is already a test input from the previous run.
+    if (testInput.trim().length > 0 && selectedOutputs.length > 0 && filledSteps.length > 0) {
+      doTest();
+    }
+    // doTest is intentionally omitted from deps: it is re-created on every render
+    // but this effect must only fire once when autoRunOnBuild flips to true.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoRunOnBuild]);
   const hasBlockingConflict = conflicts.some(
     (c, i) => c !== null && c !== "checking" && (c as { conflict: boolean }).conflict && !approved[i]
   );
@@ -306,7 +341,9 @@ function BuildForm() {
     const extra = alreadyAnswered
       ? `\n\nUser clarification: ${clarificationAnswerRef.current}`
       : "";
-    doTest(extra);
+    // Pass the stored answer so doTest re-writes the refs on success,
+    // keeping them fresh even if doTest is ever called from another path.
+    doTest(extra, alreadyAnswered ? clarificationAnswerRef.current : undefined);
   }
 
   async function doTest(extraInstruction = "", answeredClarification?: string) {
@@ -412,9 +449,12 @@ function BuildForm() {
               <button
                 onClick={() => {
                   const ans = clarificationAnswer.trim();
+                  // Pass ans (may be empty string) as answeredClarification so the
+                  // refs are written and re-asking is skipped on subsequent runs.
+                  // Empty string is the sentinel for "user dismissed without answering".
                   doTest(
                     ans ? `\n\nUser clarification: ${ans}` : "",
-                    ans || "(skipped)",
+                    ans,
                   );
                 }}
                 className="flex-1 rounded-full bg-gray-900 dark:bg-gray-100 px-4 py-2 text-sm font-semibold text-white dark:text-gray-900 hover:bg-gray-700 transition-colors"
@@ -500,33 +540,40 @@ function BuildForm() {
             </div>
           </div>
 
-          {/* Connectors */}
+          {/* Connectors — read from Settings */}
           <div>
             <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Connectors <span className="font-normal text-gray-400">(optional)</span></p>
-            <div className="space-y-2">
-              {CONNECTORS.map((c) => {
-                const on = enabledConnectors[c.id];
-                return (
-                  <div key={c.id} className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3">
-                    <div>
-                      <p className="text-sm font-medium text-gray-800 dark:text-gray-100">{c.label}</p>
-                      <p className="text-xs text-gray-400">
-                        {on ? c.detail : "disconnected"}
-                      </p>
+            {connectors.length === 0 ? (
+              <p className="text-xs text-gray-400">
+                No connectors configured.{" "}
+                <a href="/settings" className="underline hover:text-gray-600 transition-colors">Add one in Settings →</a>
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {connectors.map((c) => {
+                  const on = enabledConnectors[c.id] ?? true;
+                  return (
+                    <div key={c.id} className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3">
+                      <div>
+                        <p className="text-sm font-medium text-gray-800 dark:text-gray-100">{c.label}</p>
+                        <p className="text-xs text-gray-400">
+                          {on ? c.detail : "disconnected"}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={on}
+                        onClick={() => toggleConnector(c.id)}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${on ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600"}`}
+                      >
+                        <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${on ? "translate-x-4" : "translate-x-1"}`} />
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={on}
-                      onClick={() => toggleConnector(c.id)}
-                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${on ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600"}`}
-                    >
-                      <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${on ? "translate-x-4" : "translate-x-1"}`} />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 

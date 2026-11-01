@@ -9,7 +9,7 @@ const STARS = [1, 2, 3, 4, 5];
 
 export default function ImprovePage() {
   const router = useRouter();
-  const { agentDef, setAgentDef, runResult, setMaxStep, processSteps, examples, currentAgentId, saveAgent } = useAgent();
+  const { agentDef, setAgentDef, runResult, setMaxStep, processSteps, examples, currentAgentId, saveAgent, setAutoRunOnBuild } = useAgent();
 
   const [rating, setRating] = useState<number>(0);
   const [hovered, setHovered] = useState<number>(0);
@@ -211,7 +211,7 @@ export default function ImprovePage() {
             ✓ Agent instructions updated. Run another test to see the improvement.
           </div>
           <button
-            onClick={() => router.push("/build")}
+            onClick={() => { setAutoRunOnBuild(true); router.push("/build"); }}
             className="w-full rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
           >
             Run agent again →
