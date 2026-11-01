@@ -5,6 +5,13 @@ import { useEffect, useState } from "react";
 import { useAgent } from "../context/AgentContext";
 import { apiErrorMessage } from "../lib/apiError";
 
+function autoGrowRef(el: HTMLTextAreaElement | null) {
+  if (el) {
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }
+}
+
 export default function ProcessPage() {
   const router = useRouter();
   const { agentDef, processSteps, setProcessSteps, setMaxStep } = useAgent();
@@ -119,6 +126,7 @@ export default function ProcessPage() {
                 {i + 1}
               </span>
               <textarea
+                ref={autoGrowRef}
                 value={step}
                 onChange={(e) => handleStepChange(i, e.target.value)}
                 onInput={(e) => { const t = e.currentTarget; t.style.height = "auto"; t.style.height = `${t.scrollHeight}px`; }}
