@@ -57,6 +57,7 @@
 - Demo use case: customer service complaint handler (customer service manager as user).
 - PoC scoped: thin slice defined, component table agreed, invented data generated (seed 42), mock interfaces written.
 - Blueprint written as a plan (carbon theme): challenge/blueprint.html (72 KB), challenge/blueprint.pdf. No warnings.
+- Blueprint updated to as-built (carbon theme): challenge/blueprint.html (73 KB), challenge/blueprint.pdf (700 KB). Status chip: AS BUILT. Hero: 10/10 MEASURED. 0 warnings. Evidence paths added to all built nodes.
 - Track A complete (A1–A5): watsonx client, agent runner, mock policy store, improvement engine, gate test.
 - Track B complete (B1–B5): Next.js + Tailwind scaffold, Define/Test/Improve screens, API proxy wired to backend.
 - S1 complete: end-to-end smoke test checklist written (app/SMOKE_TEST.md).
