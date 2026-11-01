@@ -45,9 +45,13 @@ cp app/.env.local.example app/.env.local
 ### 2. Start the backend
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r src/requirements.txt
 uvicorn src.api:app --port 8000
 ```
+
+> **macOS note:** system Python on macOS 13+ blocks `pip install` globally (PEP 668). Use the virtualenv above.
 
 Backend runs at `http://localhost:8000`. API docs at `http://localhost:8000/docs`.
 
