@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAgent } from "../context/AgentContext";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -82,10 +82,12 @@ function ConnectorRow({
   connector,
   onChange,
   onRemove,
+  urlError,
 }: {
   connector: Connector;
   onChange: (patch: Partial<Connector>) => void;
   onRemove: () => void;
+  urlError?: string;
 }) {
   return (
     <div className="rounded-lg border border-border-subtle bg-surface p-4 space-y-3">
@@ -137,8 +139,9 @@ function ConnectorRow({
             value={connector.url}
             onChange={(e) => onChange({ url: e.target.value })}
             placeholder="https://api.example.com"
-            className="w-full rounded-md border border-border-subtle bg-canvas px-3 py-1.5 text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-structural"
+            className={`w-full rounded-md border bg-canvas px-3 py-1.5 text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-structural ${urlError ? "border-red-400 focus:ring-red-400" : "border-border-subtle"}`}
           />
+          {urlError && <p className="mt-1 text-xs text-red-500">{urlError}</p>}
         </div>
       </div>
 
@@ -249,10 +252,36 @@ export default function SettingsPage() {
   return mounted ? <SettingsForm /> : null;
 }
 
+/** Returns null if valid, or an error message if invalid. */
+function validateUrl(raw: string): string | null {
+  if (!raw.trim()) return null; // empty is allowed (connector may not need a URL)
+  try {
+    const u = new URL(raw.trim());
+    if (u.protocol !== "http:" && u.protocol !== "https:") {
+      return "URL must start with http:// or https://";
+    }
+    return null;
+  } catch {
+    return "Not a valid URL";
+  }
+}
+
 function SettingsForm() {
   const [connectors, setConnectors] = useState<Connector[]>(() => loadSettings().connectors);
   const [mcpServers, setMcpServers] = useState<McpServer[]>(() => loadSettings().mcpServers);
   const [saved, setSaved] = useState(false);
+  const [urlErrors, setUrlErrors] = useState<Record<string, string>>({});
+  const [isDirty, setIsDirty] = useState(false);
+  const savedSnapshotRef = useRef(JSON.stringify({ connectors: loadSettings().connectors, mcpServers: loadSettings().mcpServers }));
+
+  // Warn before navigating away with unsaved changes.
+  useEffect(() => {
+    function handleBeforeUnload(e: BeforeUnloadEvent) {
+      if (isDirty) { e.preventDefault(); }
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   // ── Connector helpers ───────────────────────────────────────────────────────
 
@@ -261,16 +290,24 @@ function SettingsForm() {
       ...prev,
       { id: makeId(), name: "", type: "http", url: "", apiKey: "", enabled: true },
     ]);
+    setIsDirty(true);
   }
 
   function updateConnector(id: string, patch: Partial<Connector>) {
     setConnectors((prev) =>
       prev.map((c) => (c.id === id ? { ...c, ...patch } : c))
     );
+    setIsDirty(true);
+    // Clear URL error for this connector when the URL field changes.
+    if ("url" in patch) {
+      setUrlErrors((prev) => { const next = { ...prev }; delete next[id]; return next; });
+    }
   }
 
   function removeConnector(id: string) {
     setConnectors((prev) => prev.filter((c) => c.id !== id));
+    setUrlErrors((prev) => { const next = { ...prev }; delete next[id]; return next; });
+    setIsDirty(true);
   }
 
   // ── MCP helpers ─────────────────────────────────────────────────────────────
@@ -280,33 +317,56 @@ function SettingsForm() {
       ...prev,
       { id: makeId(), name: "", transport: "stdio", command: "", url: "", enabled: true },
     ]);
+    setIsDirty(true);
   }
 
   function updateMcpServer(id: string, patch: Partial<McpServer>) {
     setMcpServers((prev) =>
       prev.map((s) => (s.id === id ? { ...s, ...patch } : s))
     );
+    setIsDirty(true);
   }
 
   function removeMcpServer(id: string) {
     setMcpServers((prev) => prev.filter((s) => s.id !== id));
+    setIsDirty(true);
   }
 
   // ── Save ────────────────────────────────────────────────────────────────────
 
   function handleSave() {
+    // Validate all connector URLs before saving.
+    const errors: Record<string, string> = {};
+    for (const c of connectors) {
+      const err = validateUrl(c.url);
+      if (err) errors[c.id] = err;
+    }
+    if (Object.keys(errors).length > 0) {
+      setUrlErrors(errors);
+      return; // block save
+    }
+
     try {
       localStorage.setItem(
         SETTINGS_KEY,
         JSON.stringify({ connectors: connectors.map((c) => ({ ...c, apiKey: "" })), mcpServers })
       );
     } catch {}
+    savedSnapshotRef.current = JSON.stringify({ connectors, mcpServers });
+    setIsDirty(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   }
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-12">
+      {/* Unsaved-changes banner */}
+      {isDirty && (
+        <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/20 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
+          You have unsaved changes — click <strong>Save settings</strong> to keep them.
+        </div>
+      )}
+
       {/* Page heading */}
       <div className="mb-10">
         <h1 className="text-2xl font-bold text-text-primary">Settings</h1>
@@ -332,6 +392,7 @@ function SettingsForm() {
                   connector={c}
                   onChange={(patch) => updateConnector(c.id, patch)}
                   onRemove={() => removeConnector(c.id)}
+                  urlError={urlErrors[c.id]}
                 />
               ))
             )}
