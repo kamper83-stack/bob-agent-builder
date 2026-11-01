@@ -40,12 +40,13 @@
 - Mock interfaces: `challenge/interfaces.md`
 
 ## Open questions
-- ~~What does the blueprint claim?~~ Blueprint written as a plan.
+- ~~What does the blueprint claim?~~ Blueprint updated to as-built.
+- ~~Gate test?~~ 10/10 PASSED (2026-10-23). See `challenge/gate-test-result.md`.
 
 ## Next step
-- Run `app/SMOKE_TEST.md` checklist end-to-end (needs watsonx credentials in `.env`).
-- Gate test: `python tests/test_improvement_gate.py` (requires live watsonx credentials).
-- Submit / pre-submission check when gate passes.
+- Pre-submission check (`submission-check` skill) before making the repo public.
+- Record the demo backup video (`challenge/renders/demo-recording.mp4`) — see `challenge/demo.md`.
+- Optional: run the 5-minute usability test script in `challenge/demo.md` with one real user.
 
 ## Log
 - Brief created.
@@ -63,3 +64,5 @@
 - S1 complete: end-to-end smoke test checklist written (app/SMOKE_TEST.md).
 - src/api.py created: FastAPI backend exposing /run and /improve for the Next.js proxy.
 - All feature branches merged to main.
+- Demo script written: `challenge/demo.md` — 3-min run of show, CMP-0001, 5 beats, failure table, reset script, Q&A bank.
+- Blueprint demo section updated to match demo.md (3 min, 5 steps, CMP-0001 as MEASURED fact). Re-rendered: challenge/blueprint.html (73 KB).

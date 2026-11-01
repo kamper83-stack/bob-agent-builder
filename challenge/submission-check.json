@@ -1,0 +1,70 @@
+{
+  "repo": "/Users/erankamper/Documents/hackaton/bob_agent_builder/bob-agent-builder",
+  "checks": [
+    {
+      "check": "repository",
+      "status": "pass",
+      "summary": "128 tracked files",
+      "items": []
+    },
+    {
+      "check": "credentials in tracked files",
+      "status": "pass",
+      "summary": "none of the known shapes found",
+      "items": []
+    },
+    {
+      "check": "credentials in the git history",
+      "status": "pass",
+      "summary": "none of the known shapes found",
+      "items": []
+    },
+    {
+      "check": "files that should not be tracked",
+      "status": "warn",
+      "summary": "1 found",
+      "items": [
+        {
+          "file": "app/app/build/page.tsx",
+          "why": "installed or built output; it belongs in .gitignore"
+        }
+      ]
+    },
+    {
+      "check": "large files",
+      "status": "pass",
+      "summary": "none",
+      "items": []
+    },
+    {
+      "check": ".gitignore covers .env",
+      "status": "pass",
+      "summary": "yes",
+      "items": []
+    },
+    {
+      "check": "README",
+      "status": "pass",
+      "summary": "README.md, 3715 bytes",
+      "items": []
+    },
+    {
+      "check": "blueprint",
+      "status": "pass",
+      "summary": "status as-built; 18 marked numbers: 2 measured, 4 estimate, 12 assumption; 4 of 13 architecture nodes planned or mocked",
+      "items": []
+    },
+    {
+      "check": "Bob session report",
+      "status": "warn",
+      "summary": "not checked: export the task session report from Bob IDE and pass its path with --report",
+      "items": []
+    },
+    {
+      "check": "uncommitted changes",
+      "status": "warn",
+      "summary": "6 files differ from the last commit; what is not committed is not submitted",
+      "items": []
+    }
+  ]
+}

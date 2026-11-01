@@ -150,19 +150,19 @@
     "difference": "Every alternative on the list produces an output. Only this solution closes the loop: when the output is wrong, the agent proposes a change to its own instructions, the user accepts or edits it, and the next run starts better. That loop — feedback to suggestion to acceptance to improved run — is absent from every listed alternative and from most commercial agent builders."
   },
   "demo": {
-    "headline": "Four minutes, one complaint, the loop closes on screen",
-    "lead": "One customer service manager. One complaint. The audience watches the agent get better in real time.",
+    "headline": "Three minutes, one complaint, the agent rewrites itself on screen",
+    "lead": "One customer service manager (CMP-0001). The audience watches a too-formal reply become a human one — after one star rating and one sentence of feedback. No code. No IT ticket.",
     "items": [
-      {"title": "Build the agent in 90 seconds", "detail": "Manager fills three fields: input (complaint text), output (response email + internal action note), context (service policy doc). Clicks Save.", "time": "0:00–1:30"},
-      {"title": "First run — acceptable but generic", "detail": "Complaint CMP-0001 is pasted. The agent returns a polished but overly formal email draft. The audience recognises the problem.", "time": "1:30–2:10"},
-      {"title": "Rate and comment", "detail": "Manager clicks 3 stars, types 'Too formal — more human, use their name'. Clicks Suggest improvement.", "time": "2:10–2:30"},
-      {"title": "The suggestion appears", "detail": "The studio shows: 'Add instruction: address the customer by name; open with empathy before policy.' Manager clicks Accept.", "time": "2:30–3:00"},
-      {"title": "Second run — visibly better", "detail": "Same complaint, new run. The draft opens with the customer's name and a human acknowledgement. Rating jumps to 5 stars without prompting.", "time": "3:00–3:45"},
-      {"title": "The loop is the product", "detail": "The agent definition now carries the accepted improvement. Every future run starts from this better baseline. The improvement is shown in the run log.", "time": "3:45–4:00"}
+      {"title": "Empty state → first agent", "detail": "Manager opens studio, names the agent 'Customer Complaint Handler', picks three fields (input: complaint, context: service policy, output: email draft + action note), clicks Generate. Steps appear. Clicks Run.", "time": "0:00–0:45"},
+      {"title": "First run — too formal", "detail": "CMP-0001 complaint pasted. Draft arrives in 3–5 s. Opening line: 'Dear Customer, I am writing to acknowledge...' — the audience recognises the problem. Google Gemini powers the run.", "time": "0:45–1:30"},
+      {"title": "Rate → improvement suggestion", "detail": "Manager clicks 2 stars, types 'Too formal — use their first name and be more empathetic'. Clicks Get improvement suggestion. Studio shows: 'Add step: address customer by first name; open with direct acknowledgment of frustration.' Manager clicks Accept.", "time": "1:30–2:20"},
+      {"title": "Second run — the aha moment", "detail": "Same complaint. New run. Draft opens with the customer's first name and leads with empathy. The room sees the difference without being told. Two seconds of silence here.", "time": "2:20–2:50"},
+      {"title": "Saved — loop closes", "detail": "Manager clicks Save. Back on home — agent card appears. The accepted improvement is now in the agent's instructions permanently. Every future run starts from this better baseline.", "time": "2:50–3:00"}
     ],
     "facts": [
-      {"value": "4 min", "label": "total demo runtime", "basis": "estimate", "source": "Scripted and timed with the invented data."},
-      {"value": "0", "label": "slides — the demo is the product", "basis": "estimate", "source": "The 3-step UI is self-explanatory."}
+      {"value": "3 min", "label": "total demo runtime", "basis": "estimate", "source": "Scripted and timed against demo.md with CMP-0001."},
+      {"value": "0", "label": "slides — the demo is the product", "basis": "estimate", "source": "The 3-step UI is self-explanatory."},
+      {"value": "CMP-0001", "label": "demo case — rude tone, medium severity, open (from manifest.json)", "basis": "measured", "source": "challenge/data/manifest.json planted case: demo_main"}
     ]
   },
   "adoption": {
