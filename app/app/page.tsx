@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useAgent } from "./context/AgentContext";
 
 function formatDate(iso: string) {
@@ -14,6 +15,7 @@ function formatDate(iso: string) {
 export default function Home() {
   const router = useRouter();
   const { savedAgents, loadAgent, deleteAgent, resetBuilder, mounted } = useAgent();
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   function handleNew() {
     resetBuilder();
@@ -28,6 +30,15 @@ export default function Home() {
   function handleEdit(id: string) {
     loadAgent(id);
     router.push("/build");
+  }
+
+  function handleDeleteClick(id: string) {
+    if (confirmDeleteId === id) {
+      deleteAgent(id);
+      setConfirmDeleteId(null);
+    } else {
+      setConfirmDeleteId(id);
+    }
   }
 
   // Suppress content that depends on localStorage until after mount — prevents flash
@@ -101,13 +112,30 @@ export default function Home() {
                     Saved {formatDate(agent.savedAt)}
                   </p>
                 </div>
-                <button
-                  onClick={() => deleteAgent(agent.id)}
-                  className="shrink-0 text-gray-300 hover:text-red-400 transition-colors text-lg leading-none mt-0.5"
-                  aria-label="Delete agent"
-                >
-                  ×
-                </button>
+                {confirmDeleteId === agent.id ? (
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => handleDeleteClick(agent.id)}
+                      className="rounded px-2 py-0.5 text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border border-red-300 dark:border-red-700"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => setConfirmDeleteId(null)}
+                      className="rounded px-2 py-0.5 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleDeleteClick(agent.id)}
+                    className="shrink-0 text-gray-300 hover:text-red-400 transition-colors text-lg leading-none mt-0.5"
+                    aria-label="Delete agent"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
 
               {/* Meta */}
