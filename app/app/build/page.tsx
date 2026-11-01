@@ -130,6 +130,11 @@ function BuildForm() {
   const [clarification, setClarification]       = useState<string | null>(null);
   const [clarificationAnswer, setClarificationAnswer] = useState("");
   const [checkingConfidence, setCheckingConfidence]   = useState(false);
+  // Track whether the user has already answered the clarifying question for
+  // the current output-type configuration.  Reset whenever outputType changes
+  // so a new configuration triggers the question once, then remembers the answer.
+  const clarificationKeyRef = useRef<string>("");
+  const clarificationAnswerRef = useRef<string>("");
 
   // ── Connector toggle state ────────────────────────────────────────────────
   const [enabledConnectors, setEnabledConnectors] = useState<Record<string, boolean>>(
@@ -239,9 +244,13 @@ function BuildForm() {
   // ── Output chip toggle ────────────────────────────────────────────────────
 
   function toggleOutput(id: string) {
-    setSelectedOutputs((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
+    setSelectedOutputs((prev) => {
+      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
+      // Reset the remembered answer whenever the output type changes.
+      clarificationKeyRef.current = next.join(",");
+      clarificationAnswerRef.current = "";
+      return next;
+    });
   }
 
   // ── Commit current state to context ──────────────────────────────────────
@@ -265,9 +274,11 @@ function BuildForm() {
   // ── Test run ──────────────────────────────────────────────────────────────
 
   async function handleTest() {
-    // Path C: no example outputs → check confidence
+    // Path C: no example outputs → check confidence once per output configuration.
     const hasAnyOutput = localExamples.some((e) => e.output.trim());
-    if (!hasAnyOutput && !clarification) {
+    const currentKey = selectedOutputs.join(",");
+    const alreadyAnswered = clarificationKeyRef.current === currentKey && clarificationAnswerRef.current !== "";
+    if (!hasAnyOutput && !clarification && !alreadyAnswered) {
       setCheckingConfidence(true);
       try {
         const res = await fetch("/api/estimate-confidence", {
@@ -291,10 +302,14 @@ function BuildForm() {
       } catch {}
       setCheckingConfidence(false);
     }
-    doTest();
+    // Re-apply the remembered answer on subsequent runs without re-asking.
+    const extra = alreadyAnswered
+      ? `\n\nUser clarification: ${clarificationAnswerRef.current}`
+      : "";
+    doTest(extra);
   }
 
-  async function doTest(extraInstruction = "") {
+  async function doTest(extraInstruction = "", answeredClarification?: string) {
     const { agentDef: committedDef } = commitState(extraInstruction);
     setTestRunning(true);
     setTestError(null);
@@ -322,6 +337,11 @@ function BuildForm() {
       setTestRunning(false);
       setClarification(null);
       setClarificationAnswer("");
+      if (answeredClarification !== undefined) {
+        // Remember the answer so subsequent runs skip re-asking.
+        clarificationKeyRef.current = selectedOutputs.join(",");
+        clarificationAnswerRef.current = answeredClarification;
+      }
     }
   }
 
@@ -390,7 +410,13 @@ function BuildForm() {
             />
             <div className="flex gap-3">
               <button
-                onClick={() => doTest(clarificationAnswer.trim() ? `\n\nUser clarification: ${clarificationAnswer.trim()}` : "")}
+                onClick={() => {
+                  const ans = clarificationAnswer.trim();
+                  doTest(
+                    ans ? `\n\nUser clarification: ${ans}` : "",
+                    ans || "(skipped)",
+                  );
+                }}
                 className="flex-1 rounded-full bg-gray-900 dark:bg-gray-100 px-4 py-2 text-sm font-semibold text-white dark:text-gray-900 hover:bg-gray-700 transition-colors"
               >
                 Continue →
