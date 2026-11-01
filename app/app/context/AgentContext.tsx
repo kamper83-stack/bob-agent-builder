@@ -142,7 +142,7 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
     /* eslint-disable react-hooks/set-state-in-effect -- localStorage can only be read after hydration */
     try {
       const storedDef = localStorage.getItem(STORAGE_KEY);
-      if (storedDef) setAgentDefState(JSON.parse(storedDef) as AgentDef);
+      if (storedDef) setAgentDefState({ ...DEFAULT_DEF, ...(JSON.parse(storedDef) as AgentDef) });
     } catch {}
     try {
       const storedStep = localStorage.getItem(MAX_STEP_KEY);
@@ -211,7 +211,11 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   function loadAgent(id: string) {
     const agent = savedAgents.find((a) => a.id === id);
     if (!agent) return;
-    setAgentDef(agent.agentDef);
+    // Use setAgentDefState (full replace + defaults) instead of setAgentDef (patch)
+    // so that old saved agents missing optional fields (tone, refinements) get defaults.
+    const loadedDef = { ...DEFAULT_DEF, ...agent.agentDef };
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(loadedDef)); } catch {}
+    setAgentDefState(loadedDef);
     setAgentName(agent.name);
     setExamples(agent.examples);
     setUploadedDoc(agent.uploadedDoc);
@@ -222,7 +226,10 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   }
 
   function resetBuilder() {
-    setAgentDef(DEFAULT_DEF);
+    // Full replace, not a patch — ensures all optional fields are cleared.
+    const clearedDef = { ...DEFAULT_DEF };
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(clearedDef)); } catch {}
+    setAgentDefState(clearedDef);
     setAgentName("");
     setExamples([]);
     setUploadedDoc(null);

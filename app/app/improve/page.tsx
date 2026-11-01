@@ -60,8 +60,13 @@ export default function ImprovePage() {
       agentInstructions: agentDef.agentInstructions + addition,
       refinements: (agentDef.refinements ?? "") + addition,
     };
+    // Capture a stable snapshot of processSteps and examples at the moment of
+    // accept — avoids a stale-closure issue if context re-renders between here
+    // and the saveAgent call.
+    const stepsSnapshot = processSteps.slice();
+    const examplesSnapshot = examples.slice();
     setAgentDef(nextDef);
-    if (currentAgentId) saveAgent({ agentDef: nextDef, processSteps, examples });
+    if (currentAgentId) saveAgent({ agentDef: nextDef, processSteps: stepsSnapshot, examples: examplesSnapshot });
     setMaxStep(3);
     setAccepted(true);
   }
