@@ -259,14 +259,14 @@ export default function TestPage() {
                 <p className="text-xs font-semibold text-gray-500 mb-1.5">
                   {agentDef.outputType.includes("email") ? "Email draft" : "Response"}
                 </p>
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap break-words max-h-96 overflow-y-auto">
+                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap break-words max-h-[28rem] overflow-y-auto">
                   {result.email_draft}
                 </div>
               </div>
 
               <div>
                 <p className="text-xs font-semibold text-gray-500 mb-1.5">Action note</p>
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap break-words max-h-96 overflow-y-auto">
+                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap break-words max-h-[28rem] overflow-y-auto">
                   {result.action_note}
                 </div>
               </div>

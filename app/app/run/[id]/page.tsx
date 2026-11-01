@@ -291,7 +291,7 @@ function RunPageInner() {
                   </p>
                   <CopyButton text={result.email_draft} />
                 </div>
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-base text-gray-800 dark:text-gray-100 whitespace-pre-wrap break-words max-h-96 overflow-y-auto">
+                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-base text-gray-800 dark:text-gray-100 whitespace-pre-wrap break-words max-h-[28rem] overflow-y-auto">
                   {result.email_draft}
                 </div>
               </div>
@@ -300,7 +300,7 @@ function RunPageInner() {
                   <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Action note</p>
                   <CopyButton text={result.action_note} />
                 </div>
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-base text-gray-800 dark:text-gray-100 whitespace-pre-wrap break-words max-h-96 overflow-y-auto">
+                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-base text-gray-800 dark:text-gray-100 whitespace-pre-wrap break-words max-h-[28rem] overflow-y-auto">
                   {result.action_note}
                 </div>
               </div>
