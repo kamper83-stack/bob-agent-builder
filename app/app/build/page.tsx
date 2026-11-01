@@ -27,11 +27,21 @@ const TONE_OPTIONS = [
   { id: "mine", label: "My style" },
 ];
 
-const GCAL_EMAIL = process.env.NEXT_PUBLIC_GCAL_EMAIL || "calendar@company.co.il";
-const CONNECTORS = [
-  { id: "google_calendar", label: "Google Calendar", detail: `${GCAL_EMAIL} · connected` },
-  { id: "email_connector", label: "Email", detail: "smtp.company.co.il · connected" },
-];
+const SETTINGS_KEY = "agent-studio:settings";
+
+/** Read connectors saved in Settings from localStorage. Falls back to empty list. */
+function loadConnectorsFromSettings(): { id: string; label: string; detail: string }[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const stored = JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? "{}");
+    const connectors = (stored.connectors ?? []) as { id: string; name: string; url: string; enabled: boolean }[];
+    return connectors
+      .filter((c) => c.enabled && c.name.trim())
+      .map((c) => ({ id: c.id, label: c.name, detail: c.url || "connected" }));
+  } catch {
+    return [];
+  }
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -137,9 +147,10 @@ function BuildForm() {
   const clarificationKeyRef = useRef<string>("");
   const clarificationAnswerRef = useRef<string>("");
 
-  // ── Connector toggle state ────────────────────────────────────────────────
+  // ── Connector state (loaded live from Settings localStorage) ─────────────
+  const [connectors] = useState(() => loadConnectorsFromSettings());
   const [enabledConnectors, setEnabledConnectors] = useState<Record<string, boolean>>(
-    () => Object.fromEntries(CONNECTORS.map((c) => [c.id, true]))
+    () => Object.fromEntries(loadConnectorsFromSettings().map((c) => [c.id, true]))
   );
   function toggleConnector(id: string) {
     setEnabledConnectors((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -153,8 +164,11 @@ function BuildForm() {
   const canTest = inputDesc.trim().length > 0 && selectedOutputs.length > 0 && filledSteps.length > 0 && testInput.trim().length > 0;
 
   // ── Auto-run after "Run agent again" from Improve page ───────────────────
+  // useRef guard prevents React StrictMode double-invocation from firing doTest twice.
+  const autoRunFiredRef = useRef(false);
   useEffect(() => {
-    if (!autoRunOnBuild) return;
+    if (!autoRunOnBuild || autoRunFiredRef.current) return;
+    autoRunFiredRef.current = true;
     setAutoRunOnBuild(false);
     // Only auto-run if there is already a test input from the previous run.
     if (testInput.trim().length > 0 && selectedOutputs.length > 0 && filledSteps.length > 0) {
@@ -512,33 +526,40 @@ function BuildForm() {
             </div>
           </div>
 
-          {/* Connectors */}
+          {/* Connectors — read from Settings */}
           <div>
             <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Connectors <span className="font-normal text-gray-400">(optional)</span></p>
-            <div className="space-y-2">
-              {CONNECTORS.map((c) => {
-                const on = enabledConnectors[c.id];
-                return (
-                  <div key={c.id} className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3">
-                    <div>
-                      <p className="text-sm font-medium text-gray-800 dark:text-gray-100">{c.label}</p>
-                      <p className="text-xs text-gray-400">
-                        {on ? c.detail : "disconnected"}
-                      </p>
+            {connectors.length === 0 ? (
+              <p className="text-xs text-gray-400">
+                No connectors configured.{" "}
+                <a href="/settings" className="underline hover:text-gray-600 transition-colors">Add one in Settings →</a>
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {connectors.map((c) => {
+                  const on = enabledConnectors[c.id] ?? true;
+                  return (
+                    <div key={c.id} className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3">
+                      <div>
+                        <p className="text-sm font-medium text-gray-800 dark:text-gray-100">{c.label}</p>
+                        <p className="text-xs text-gray-400">
+                          {on ? c.detail : "disconnected"}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={on}
+                        onClick={() => toggleConnector(c.id)}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${on ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600"}`}
+                      >
+                        <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${on ? "translate-x-4" : "translate-x-1"}`} />
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={on}
-                      onClick={() => toggleConnector(c.id)}
-                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${on ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600"}`}
-                    >
-                      <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${on ? "translate-x-4" : "translate-x-1"}`} />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
