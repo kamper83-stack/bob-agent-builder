@@ -709,11 +709,11 @@ function BuildForm() {
             <div className="space-y-4">
               <div>
                 <p className="text-xs font-semibold text-gray-500 mb-1.5">{selectedOutputs.includes("email") ? "Email draft" : "Response"}</p>
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">{testResult.email_draft}</div>
+                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap break-words max-h-[28rem] overflow-y-auto">{testResult.email_draft}</div>
               </div>
               <div>
                 <p className="text-xs font-semibold text-gray-500 mb-1.5">Action note</p>
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">{testResult.action_note}</div>
+                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap break-words max-h-[28rem] overflow-y-auto">{testResult.action_note}</div>
               </div>
             </div>
           )}

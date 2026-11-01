@@ -182,7 +182,7 @@ export default function ImprovePage() {
             <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               Suggested instruction change
             </h2>
-            <div className="rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">
+            <div className="rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20 px-4 py-4 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap break-words max-h-[28rem] overflow-y-auto">
               {suggestion}
             </div>
           </div>
