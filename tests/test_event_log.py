@@ -12,7 +12,7 @@ from src.event_log import MemoryLogHandler
 
 @pytest.fixture
 def client():
-    event_log.memory_handler._entries.clear()
+    event_log.memory_handler.reset()
     return TestClient(api.app, raise_server_exceptions=False)
 
 

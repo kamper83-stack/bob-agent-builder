@@ -36,7 +36,8 @@ async function fetchLogs(): Promise<LogsResult> {
 }
 
 function formatTime(iso: string) {
-  return new Date(iso).toLocaleString(undefined, {
+  // Use "en" explicitly to avoid SSR/client locale mismatch (Next.js server uses system locale).
+  return new Date(iso).toLocaleString("en", {
     month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit",
   });
 }

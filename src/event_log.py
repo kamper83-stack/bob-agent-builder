@@ -29,11 +29,13 @@ class MemoryLogHandler(logging.Handler):
 
     def emit(self, record: logging.LogRecord) -> None:
         try:
-            self._entries.append({
+            entry: LogEntry = {
                 "timestamp": datetime.fromtimestamp(record.created, timezone.utc).isoformat(),
                 "level": record.levelname.lower(),
                 "message": record.getMessage(),
-            })
+            }
+            with self.lock:
+                self._entries.append(entry)
         except Exception:
             self.handleError(record)
 
@@ -41,6 +43,11 @@ class MemoryLogHandler(logging.Handler):
         """Returns the stored entries, newest first."""
         with self.lock:
             return list(reversed(self._entries))
+
+    def reset(self) -> None:
+        """Clears all stored entries. For use in tests."""
+        with self.lock:
+            self._entries.clear()
 
 
 memory_handler = MemoryLogHandler()
