@@ -147,9 +147,10 @@ Point at the rating badge and say: "The improvement loop is live — the instruc
 Run this before the demo to clear all localStorage state and start fresh:
 
 ```javascript
-// Paste in browser DevTools console
-localStorage.removeItem("agent-studio:agents");
-localStorage.removeItem("agent-studio:settings");
+// Paste in browser DevTools console — clears all agent-studio keys
+Object.keys(localStorage)
+  .filter(k => k.startsWith("agent-studio:"))
+  .forEach(k => localStorage.removeItem(k));
 location.reload();
 ```
 
