@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAgent, type AgentDef, type AgentExample } from "../context/AgentContext";
 import { apiErrorMessage } from "../lib/apiError";
 
@@ -93,6 +93,7 @@ function BuildForm() {
     processSteps, setProcessSteps,
     setRunResult, setMaxStep,
     saveAgent,
+    autoRunOnBuild, setAutoRunOnBuild,
   } = useAgent();
 
   // ── Column 1 state ────────────────────────────────────────────────────────
@@ -150,6 +151,17 @@ function BuildForm() {
   // ── Derived ───────────────────────────────────────────────────────────────
   const filledSteps = steps.filter((s) => s.trim().length > 0);
   const canTest = inputDesc.trim().length > 0 && selectedOutputs.length > 0 && filledSteps.length > 0 && testInput.trim().length > 0;
+
+  // ── Auto-run after "Run agent again" from Improve page ───────────────────
+  useEffect(() => {
+    if (!autoRunOnBuild) return;
+    setAutoRunOnBuild(false);
+    // Only auto-run if there is already a test input from the previous run.
+    if (testInput.trim().length > 0 && selectedOutputs.length > 0 && filledSteps.length > 0) {
+      doTest();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoRunOnBuild]);
   const hasBlockingConflict = conflicts.some(
     (c, i) => c !== null && c !== "checking" && (c as { conflict: boolean }).conflict && !approved[i]
   );
