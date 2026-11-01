@@ -565,11 +565,13 @@ function BuildForm() {
           {stepsError && <p className="text-xs text-red-500">{stepsError}</p>}
           <ol className="space-y-2">
             {steps.map((step, i) => (
-              <li key={i} className="flex items-center gap-2">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 dark:bg-gray-100 text-xs font-bold text-white dark:text-gray-900">{i + 1}</span>
-                <input type="text" value={step} onChange={(e) => updateStep(i, e.target.value)} placeholder={`Step ${i + 1}`}
-                  className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                {steps.length > 1 && <button onClick={() => removeStep(i)} className="text-gray-300 hover:text-red-400 transition-colors text-lg leading-none" aria-label="Remove step">×</button>}
+              <li key={i} className="flex items-start gap-2">
+                <span className="mt-2 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 dark:bg-gray-100 text-xs font-bold text-white dark:text-gray-900">{i + 1}</span>
+                <textarea value={step} onChange={(e) => updateStep(i, e.target.value)}
+                  onInput={(e) => { const t = e.currentTarget; t.style.height = "auto"; t.style.height = `${t.scrollHeight}px`; }}
+                  placeholder={`Step ${i + 1}`} rows={1}
+                  className="flex-1 resize-none overflow-hidden rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                {steps.length > 1 && <button onClick={() => removeStep(i)} className="mt-2 text-gray-300 hover:text-red-400 transition-colors text-lg leading-none" aria-label="Remove step">×</button>}
               </li>
             ))}
           </ol>
