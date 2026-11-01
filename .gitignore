@@ -12,3 +12,6 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .DS_Store
+
+# Playwright recon / debug scripts — not part of the submission
+scripts/recon_*.py

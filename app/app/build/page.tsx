@@ -558,6 +558,9 @@ function BuildForm() {
               Processing steps <span className="text-red-500">*</span>
               <span className="font-normal text-gray-400 ml-1">— use ✦ Generate or write your own</span>
             </p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
+              List the actions the agent should follow in order — for example: &ldquo;Read the complaint&rdquo;, &ldquo;Check the policy&rdquo;, &ldquo;Draft the reply&rdquo;. At least one step is required to run the agent.
+            </p>
           </div>
           {stepsError && <p className="text-xs text-red-500">{stepsError}</p>}
           <ol className="space-y-2">
