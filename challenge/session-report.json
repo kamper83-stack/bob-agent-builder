@@ -1,13 +1,22 @@
 {
-  "_note": "Export the full session report from the IBM Bob IDE hackathon account and replace this file. See issue #70.",
-  "_instructions": [
-    "1. Open Bob IDE on the IBM hackathon account (not a personal account).",
-    "2. Open the task/session for this project.",
-    "3. Click the export button (Session Report) in the top-right of the IDE.",
-    "4. Save the exported JSON as challenge/session-report.json (replace this file).",
-    "5. Commit and push to main before submission."
-  ],
   "project": "Agent Studio — Self-Improving Customer Complaint Handler",
   "repository": "https://github.com/kamper83-stack/bob-agent-builder",
-  "status": "PENDING_EXPORT"
+  "status": "EXPORTED",
+  "exportedAt": "2026-11-02",
+  "note": "13 Bob IDE task session reports exported from the hackathon account on 2026-11-02. Full JSON files are in challenge/session-reports/. Total turns across all sessions: 2662.",
+  "sessions": [
+    {"file": "challenge/session-reports/bob-task-9c51954e55bca540d8089941ff6e55f2-2026-11-02.json", "turns": 5},
+    {"file": "challenge/session-reports/bob-task-84e25f1eb9c4a357bfea439a4ff9ef8b-2026-11-02.json", "turns": 40},
+    {"file": "challenge/session-reports/bob-task-868a17538c7c86e2760f5b2ac306be5f-2026-11-02.json", "turns": 36},
+    {"file": "challenge/session-reports/bob-task-bb25fbed9cb6bcc3d48db700e2231481-2026-11-02.json", "turns": 134},
+    {"file": "challenge/session-reports/bob-task-cbca643284e57f1c39421acca9d5bd58-2026-11-02.json", "turns": 150},
+    {"file": "challenge/session-reports/bob-task-6867d26cf67eaa0841d242d822d5a486-2026-11-02.json", "turns": 161},
+    {"file": "challenge/session-reports/bob-task-d0a12c475e4cda085e5f77facf46e3e0-2026-11-02.json", "turns": 466},
+    {"file": "challenge/session-reports/bob-task-abae34d329e8dae94b41edbc7318739e-2026-11-02.json", "turns": 242},
+    {"file": "challenge/session-reports/bob-task-73f1c11e754594ab62f85e8ba02892a9-2026-11-02.json", "turns": 208},
+    {"file": "challenge/session-reports/bob-task-4a528835108385cfcaad0717bbb3b68f-2026-11-02.json", "turns": 75},
+    {"file": "challenge/session-reports/bob-task-cbbe564c0428b499319ca3f15a26059d-2026-11-02.json", "turns": 345},
+    {"file": "challenge/session-reports/bob-task-1efd7743f1f6efba79b52136cf379edb-2026-11-02.json", "turns": 368},
+    {"file": "challenge/session-reports/bob-task-35f24b0010abe1c47b3fd05ca2491b03-2026-11-02.json", "turns": 432}
+  ]
 }
