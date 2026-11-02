@@ -1,10 +1,10 @@
 {
-  "repo": "/Users/erankamper/Documents/hackaton/bob_agent_builder/bob-agent-builder",
+  "repo": "/Users/shiriky/bob agent/bob-agent-builder",
   "checks": [
     {
       "check": "repository",
       "status": "pass",
-      "summary": "128 tracked files",
+      "summary": "127 tracked files",
       "items": []
     },
     {
@@ -50,8 +50,8 @@
     },
     {
       "check": "blueprint",
-      "status": "pass",
-      "summary": "status as-built; 18 marked numbers: 2 measured, 4 estimate, 12 assumption; 4 of 13 architecture nodes planned or mocked",
+      "status": "warn",
+      "summary": "status plan; 17 marked numbers: 0 measured, 4 estimate, 13 assumption; 4 of 13 architecture nodes planned or mocked; the document still says it is a plan; move it to as-built once the proof of concept runs; blueprint.html is older than the spec; render it again",
       "items": []
     },
     {
@@ -63,7 +63,7 @@
     {
       "check": "uncommitted changes",
       "status": "warn",
-      "summary": "6 files differ from the last commit; what is not committed is not submitted",
+      "summary": "2 files differ from the last commit; what is not committed is not submitted",
       "items": []
     }
   ]
