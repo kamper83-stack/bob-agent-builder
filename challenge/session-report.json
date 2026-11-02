@@ -1,0 +1,13 @@
+{
+  "_note": "Export the full session report from the IBM Bob IDE hackathon account and replace this file. See issue #70.",
+  "_instructions": [
+    "1. Open Bob IDE on the IBM hackathon account (not a personal account).",
+    "2. Open the task/session for this project.",
+    "3. Click the export button (Session Report) in the top-right of the IDE.",
+    "4. Save the exported JSON as challenge/session-report.json (replace this file).",
+    "5. Commit and push to main before submission."
+  ],
+  "project": "Agent Studio — Self-Improving Customer Complaint Handler",
+  "repository": "https://github.com/kamper83-stack/bob-agent-builder",
+  "status": "PENDING_EXPORT"
+}
