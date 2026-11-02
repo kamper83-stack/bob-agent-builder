@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useAgent, type AgentDef, type AgentExample } from "../context/AgentContext";
@@ -112,6 +113,7 @@ function BuildForm() {
     processSteps, setProcessSteps,
     setRunResult, setMaxStep,
     saveAgent,
+    recordRun,
     autoRunOnBuild, setAutoRunOnBuild,
   } = useAgent();
 
@@ -378,7 +380,8 @@ function BuildForm() {
       if (!res.ok) throw new Error(await apiErrorMessage(res));
       const data = await res.json();
       setTestResult(data);
-      setRunResult({ ...data, complaint_text: testInput });
+      const runId = recordRun({ input: testInput, email_draft: data.email_draft, action_note: data.action_note });
+      setRunResult({ ...data, complaint_text: testInput, run_id: runId });
       setMaxStep(1);
       setSaved(false); // mark unsaved after a new test run
     } catch (err) {
@@ -423,6 +426,12 @@ function BuildForm() {
           placeholder="Agent name…"
           className="flex-1 min-w-0 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        <Link
+          href="/history"
+          className="rounded-full border border-gray-300 dark:border-gray-600 px-4 py-1.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+        >
+          History
+        </Link>
         <button
           onClick={handleSave}
           disabled={!agentDef.agentInstructions && filledSteps.length === 0}

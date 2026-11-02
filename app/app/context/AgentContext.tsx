@@ -41,6 +41,36 @@ export interface RunResult {
   email_draft: string;
   action_note: string;
   complaint_text: string;
+  /** Id of this run in the agent's history */
+  run_id?: string;
+}
+
+/** One state of the agent's instructions, created by an accepted improvement or a restore */
+export interface AgentVersion {
+  number: number;
+  createdAt: string; // ISO date string
+  change: string;
+  rating: number; // 0 when the version did not come from a rating
+  comment: string;
+  refinements: string;
+  agentInstructions: string;
+  restoredFrom?: number;
+}
+
+export interface AgentRun {
+  id: string;
+  createdAt: string; // ISO date string
+  version: number;
+  input: string;
+  email_draft: string;
+  action_note: string;
+  rating?: number;
+  comment?: string;
+}
+
+export interface AgentHistory {
+  versions: AgentVersion[];
+  runs: AgentRun[];
 }
 
 /** A fully saved agent that appears on the Agents list */
@@ -88,6 +118,14 @@ interface AgentContextValue {
   /** When true, the Build page should trigger a test run immediately on mount. */
   autoRunOnBuild: boolean;
   setAutoRunOnBuild: (v: boolean) => void;
+
+  /** Versions and runs of the current agent */
+  history: AgentHistory;
+  /** Stores a run on `agentId`, or on the current agent. Returns the run id. */
+  recordRun: (run: Pick<AgentRun, "input" | "email_draft" | "action_note">, agentId?: string) => string;
+  rateRun: (runId: string, rating: number, comment: string) => void;
+  addVersion: (improvement: Pick<AgentVersion, "change" | "rating" | "comment">, previous: AgentDef, next: AgentDef) => void;
+  restoreVersion: (versionNumber: number) => void;
 }
 
 const DEFAULT_DEF: AgentDef = {
@@ -101,6 +139,18 @@ const STORAGE_KEY = "agent-studio:agentDef";
 const MAX_STEP_KEY = "agent-studio:maxStep";
 const AGENTS_KEY  = "agent-studio:savedAgents";
 const DRAFT_KEY   = "agent-studio:draft";
+const HISTORY_KEY = "agent-studio:history";
+
+/** History key of an agent that has not been saved yet */
+const DRAFT_HISTORY = "draft";
+const MAX_RUNS = 50; // localStorage is limited, so only recent runs are kept
+const EMPTY_HISTORY: AgentHistory = { versions: [], runs: [] };
+
+function withoutKey(histories: Record<string, AgentHistory>, key: string) {
+  const next = { ...histories };
+  delete next[key];
+  return next;
+}
 
 const AgentContext = createContext<AgentContextValue>({
   agentDef: DEFAULT_DEF,
@@ -127,6 +177,11 @@ const AgentContext = createContext<AgentContextValue>({
   mounted: false,
   autoRunOnBuild: false,
   setAutoRunOnBuild: () => {},
+  history: EMPTY_HISTORY,
+  recordRun: () => "",
+  rateRun: () => {},
+  addVersion: () => {},
+  restoreVersion: () => {},
 });
 
 export function AgentProvider({ children }: { children: React.ReactNode }) {
@@ -143,6 +198,9 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   const [builderKey, setBuilderKey] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [autoRunOnBuild, setAutoRunOnBuild] = useState(false);
+  const [histories, setHistories] = useState<Record<string, AgentHistory>>({});
+
+  const historyKey = currentAgentId ?? DRAFT_HISTORY;
 
   // Load persisted state after first client render (avoids SSR/client mismatch)
   useEffect(() => {
@@ -158,6 +216,10 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
     try {
       const storedAgents = localStorage.getItem(AGENTS_KEY);
       if (storedAgents) setSavedAgents(JSON.parse(storedAgents) as SavedAgent[]);
+    } catch {}
+    try {
+      const storedHistory = localStorage.getItem(HISTORY_KEY);
+      if (storedHistory) setHistories(JSON.parse(storedHistory) as Record<string, AgentHistory>);
     } catch {}
     try {
       const storedDraft = localStorage.getItem(DRAFT_KEY);
@@ -197,6 +259,98 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
     });
   }
 
+  function writeHistories(update: (prev: Record<string, AgentHistory>) => Record<string, AgentHistory>) {
+    setHistories((prev) => {
+      const next = update(prev);
+      try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }
+
+  function updateHistory(key: string, update: (prev: AgentHistory) => AgentHistory) {
+    writeHistories((prev) => ({ ...prev, [key]: update(prev[key] ?? EMPTY_HISTORY) }));
+  }
+
+  function recordRun(run: Pick<AgentRun, "input" | "email_draft" | "action_note">, agentId?: string) {
+    const id = Date.now().toString(36);
+    const createdAt = new Date().toISOString();
+    updateHistory(agentId ?? historyKey, (prev) => ({
+      ...prev,
+      runs: [
+        { ...run, id, createdAt, version: prev.versions.at(-1)?.number ?? 1 },
+        ...prev.runs,
+      ].slice(0, MAX_RUNS),
+    }));
+    return id;
+  }
+
+  function rateRun(runId: string, rating: number, comment: string) {
+    updateHistory(historyKey, (prev) => ({
+      ...prev,
+      runs: prev.runs.map((r) => (r.id === runId ? { ...r, rating, comment } : r)),
+    }));
+  }
+
+  function addVersion(
+    improvement: Pick<AgentVersion, "change" | "rating" | "comment">,
+    previous: AgentDef,
+    next: AgentDef,
+  ) {
+    const createdAt = new Date().toISOString();
+    updateHistory(historyKey, (prev) => {
+      // The first improvement also records what the agent was before it
+      const versions: AgentVersion[] = prev.versions.length > 0 ? prev.versions : [{
+        number: 1,
+        createdAt,
+        change: "Original instructions",
+        rating: 0,
+        comment: "",
+        refinements: previous.refinements ?? "",
+        agentInstructions: previous.agentInstructions,
+      }];
+      return {
+        ...prev,
+        versions: [...versions, {
+          ...improvement,
+          number: versions.length + 1,
+          createdAt,
+          refinements: next.refinements ?? "",
+          agentInstructions: next.agentInstructions,
+        }],
+      };
+    });
+  }
+
+  /** Goes back by adding a new version, so the versions after it are kept */
+  function restoreVersion(versionNumber: number) {
+    const versions = histories[historyKey]?.versions ?? [];
+    const target = versions.find((v) => v.number === versionNumber);
+    if (!target) return;
+    const { refinements, agentInstructions } = target;
+    setAgentDef({ refinements, agentInstructions });
+    setSavedAgents((prev) => {
+      const next = prev.map((a) =>
+        a.id === currentAgentId ? { ...a, agentDef: { ...a.agentDef, refinements, agentInstructions } } : a
+      );
+      try { localStorage.setItem(AGENTS_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+    const createdAt = new Date().toISOString();
+    updateHistory(historyKey, (prev) => ({
+      ...prev,
+      versions: [...prev.versions, {
+        number: prev.versions.length + 1,
+        createdAt,
+        change: `Restored version ${versionNumber}`,
+        rating: 0,
+        comment: "",
+        refinements,
+        agentInstructions,
+        restoredFrom: versionNumber,
+      }],
+    }));
+  }
+
   function saveAgent(snapshot: AgentSnapshot): string {
     const id = currentAgentId ?? Date.now().toString(36);
     const agent: SavedAgent = {
@@ -211,6 +365,13 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
       try { localStorage.setItem(AGENTS_KEY, JSON.stringify(next)); } catch {}
       return next;
     });
+    if (!currentAgentId) {
+      // A new agent keeps the versions and runs from before its first save
+      writeHistories((prev) => {
+        const draft = prev[DRAFT_HISTORY];
+        return draft ? { ...withoutKey(prev, DRAFT_HISTORY), [id]: draft } : prev;
+      });
+    }
     setCurrentAgentId(id);
     return id;
   }
@@ -244,6 +405,7 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
     setRunResult(null);
     setCurrentAgentId(null);
     setBuilderKey((k) => k + 1);
+    writeHistories((prev) => withoutKey(prev, DRAFT_HISTORY));
   }
 
   function deleteAgent(id: string) {
@@ -252,6 +414,7 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
       try { localStorage.setItem(AGENTS_KEY, JSON.stringify(next)); } catch {}
       return next;
     });
+    writeHistories((prev) => withoutKey(prev, id));
   }
 
   return (
@@ -267,6 +430,8 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
       currentAgentId, builderKey,
       mounted,
       autoRunOnBuild, setAutoRunOnBuild,
+      history: histories[historyKey] ?? EMPTY_HISTORY,
+      recordRun, rateRun, addVersion, restoreVersion,
     }}>
       {children}
     </AgentContext.Provider>

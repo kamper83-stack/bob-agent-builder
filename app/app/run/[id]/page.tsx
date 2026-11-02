@@ -28,7 +28,7 @@ function RunPageInner() {
   const router = useRouter();
   const id = params?.id as string;
 
-  const { savedAgents, agentDef, processSteps, uploadedDoc, loadAgent } = useAgent();
+  const { savedAgents, agentDef, processSteps, uploadedDoc, loadAgent, recordRun } = useAgent();
 
   // Find the saved agent to display its name
   const savedAgent = savedAgents.find((a) => a.id === id);
@@ -94,6 +94,7 @@ function RunPageInner() {
       if (!res.ok) throw new Error(await apiErrorMessage(res));
       const data = await res.json();
       setResult(data);
+      recordRun({ input: inputText, email_draft: data.email_draft, action_note: data.action_note }, id);
       setActiveStep(steps.length);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
@@ -102,6 +103,20 @@ function RunPageInner() {
       if (stepInterval) clearInterval(stepInterval);
       setLoading(false);
     }
+  }
+
+  /** Empties the screen for the next case. The run stays in the agent's history. */
+  function handleClear() {
+    setInputText("");
+    setUploadedInput(null);
+    setResult(null);
+    setError(null);
+    setActiveStep(-1);
+  }
+
+  function openHistory() {
+    loadAgent(id);
+    router.push("/history");
   }
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -126,6 +141,19 @@ function RunPageInner() {
             className="text-xs text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors border border-gray-200 dark:border-gray-700 rounded-full px-3 py-1"
           >
             ✎ Edit agent
+          </button>
+          <button
+            onClick={openHistory}
+            className="text-xs text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors border border-gray-200 dark:border-gray-700 rounded-full px-3 py-1"
+          >
+            History
+          </button>
+          <button
+            onClick={handleClear}
+            disabled={loading || (!inputText && !result && !error)}
+            className="rounded-full border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            Clear
           </button>
           <button
             onClick={handleRun}
@@ -284,6 +312,7 @@ function RunPageInner() {
           {/* Result */}
           {result && (
             <div className="space-y-5">
+              <p className="text-xs text-gray-400">✓ Saved to this agent&apos;s history</p>
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">
