@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAgent } from "../context/AgentContext";
@@ -9,7 +10,7 @@ const STARS = [1, 2, 3, 4, 5];
 
 export default function ImprovePage() {
   const router = useRouter();
-  const { agentDef, setAgentDef, runResult, setMaxStep, processSteps, examples, currentAgentId, saveAgent, setAutoRunOnBuild } = useAgent();
+  const { agentDef, setAgentDef, runResult, setMaxStep, processSteps, examples, currentAgentId, saveAgent, setAutoRunOnBuild, rateRun, addVersion } = useAgent();
 
   const [rating, setRating] = useState<number>(0);
   const [hovered, setHovered] = useState<number>(0);
@@ -26,6 +27,7 @@ export default function ImprovePage() {
     setLoading(true);
     setError(null);
     setSuggestion(null);
+    if (runResult?.run_id) rateRun(runResult.run_id, rating, comment.trim());
 
     try {
       const res = await fetch(
@@ -66,6 +68,7 @@ export default function ImprovePage() {
     const stepsSnapshot = processSteps.slice();
     const examplesSnapshot = examples.slice();
     setAgentDef(nextDef);
+    addVersion({ change: suggestion, rating, comment: comment.trim() }, agentDef, nextDef);
     if (currentAgentId) saveAgent({ agentDef: nextDef, processSteps: stepsSnapshot, examples: examplesSnapshot });
     setMaxStep(3);
     setAccepted(true);
@@ -216,6 +219,9 @@ export default function ImprovePage() {
           >
             Run agent again →
           </button>
+          <Link href="/history" className="block text-center text-sm text-gray-500 underline hover:text-gray-700 dark:hover:text-gray-300">
+            View version history
+          </Link>
         </div>
       )}
     </div>

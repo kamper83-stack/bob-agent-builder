@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAgent } from "../context/AgentContext";
@@ -7,7 +8,7 @@ import { apiErrorMessage } from "../lib/apiError";
 
 export default function TestPage() {
   const router = useRouter();
-  const { agentDef, processSteps, uploadedDoc, setRunResult, setMaxStep } = useAgent();
+  const { agentDef, processSteps, uploadedDoc, setRunResult, setMaxStep, recordRun } = useAgent();
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [inputText, setInputText] = useState("");
@@ -57,7 +58,8 @@ export default function TestPage() {
 
       const data = await res.json();
       setResult(data);
-      setRunResult({ ...data, complaint_text: inputText });
+      const runId = recordRun({ input: inputText, email_draft: data.email_draft, action_note: data.action_note });
+      setRunResult({ ...data, complaint_text: inputText, run_id: runId });
       setActiveStep(steps.length); // all steps done
       setMaxStep(2);
     } catch (err) {
@@ -67,6 +69,15 @@ export default function TestPage() {
       if (stepInterval) clearInterval(stepInterval);
       setLoading(false);
     }
+  }
+
+  /** Empties the screen for the next case. The run stays in the agent's history. */
+  function handleClear() {
+    setInputText("");
+    setResult(null);
+    setRunResult(null);
+    setError(null);
+    setActiveStep(-1);
   }
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -88,6 +99,13 @@ export default function TestPage() {
               Rate this output →
             </button>
           )}
+          <button
+            onClick={handleClear}
+            disabled={loading || (!inputText && !result && !error)}
+            className="rounded-full border border-gray-300 dark:border-gray-600 px-4 py-1.5 text-sm font-semibold text-gray-600 dark:text-gray-300 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Clear
+          </button>
           <button
             onClick={handleRun}
             disabled={!canRun || !isReady}
@@ -255,6 +273,10 @@ export default function TestPage() {
           {/* Result */}
           {result && (
             <div className="space-y-4">
+              <p className="text-xs text-gray-400">
+                ✓ Saved to this agent&apos;s{" "}
+                <Link href="/history" className="underline hover:text-gray-600">history</Link>
+              </p>
               <div>
                 <p className="text-xs font-semibold text-gray-500 mb-1.5">
                   {agentDef.outputType.includes("email") ? "Email draft" : "Response"}
